@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>RAG问答系统 - 招股说明书智能问答</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:linear-gradient(135deg,#0f0c29 0%,#1a1a3e 40%,#16213e 100%);min-height:100vh;color:#e0e0e0}
+.container{max-width:800px;margin:0 auto;padding:0 16px;display:flex;flex-direction:column;height:100vh}
+
+/* Header */
+header{text-align:center;padding:20px 0 14px;flex-shrink:0}
+header h1{font-size:22px;color:#fff;margin-bottom:4px;letter-spacing:.5px}
+header p{color:#888;font-size:12px;line-height:1.5}
+.badge{display:inline-block;background:rgba(100,200,255,.1);color:#64c8ff;padding:3px 12px;border-radius:20px;font-size:11px;margin-top:6px;border:1px solid rgba(100,200,255,.18)}
+
+/* Language Toggle */
+.lang-toggle{background:linear-gradient(135deg,rgba(100,255,180,.15),rgba(64,200,130,.15));border:1.5px solid rgba(100,255,180,.35);color:#64ffb4;padding:6px 18px;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s;margin-left:8px;vertical-align:middle;line-height:1;letter-spacing:.5px;box-shadow:0 0 12px rgba(100,255,180,.12)}
+.lang-toggle:hover{background:linear-gradient(135deg,rgba(100,255,180,.25),rgba(64,200,130,.25));border-color:rgba(100,255,180,.5);box-shadow:0 0 20px rgba(100,255,180,.25);transform:scale(1.05)}
+.lang-toggle:active{transform:scale(0.97)}
+
+/* Upload Area */
+.upload-section{margin:12px 0;flex-shrink:0}
+.upload-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;cursor:pointer;transition:all .2s}
+.upload-toggle:hover{background:rgba(255,255,255,.06);border-color:rgba(100,200,255,.2)}
+.upload-toggle .left{display:flex;align-items:center;gap:8px}
+.upload-toggle .icon{font-size:18px}
+.upload-toggle .text{font-size:13px;color:#aaa}
+.upload-toggle .arrow{font-size:12px;color:#666;transition:transform .2s}
+.upload-toggle.open .arrow{transform:rotate(180deg)}
+
+.upload-panel{display:none;margin-top:10px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;animation:fadeSlide .25s ease}
+.upload-panel.show{display:block}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+.drop-zone{border:2px dashed rgba(100,200,255,.2);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all .2s}
+.drop-zone:hover{border-color:rgba(100,200,255,.4);background:rgba(100,200,255,.03)}
+.drop-zone.drag-over{border-color:#64c8ff;background:rgba(100,200,255,.08);transform:scale(1.01)}
+.drop-zone .drop-icon{font-size:32px;margin-bottom:8px;opacity:.5}
+.drop-zone .drop-text{font-size:13px;color:#888;line-height:1.6}
+.drop-zone .drop-hint{font-size:11px;color:#555;margin-top:6px}
+.drop-zone input[type="file"]{display:none}
+
+.file-list{margin-top:12px;max-height:160px;overflow-y:auto}
+.file-list::-webkit-scrollbar{width:3px}
+.file-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.file-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:8px;margin-bottom:6px;font-size:12px;animation:fadeSlide .2s ease}
+.file-item .file-icon{font-size:16px}
+.file-item .file-name{flex:1;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-item .file-size{color:#666;flex-shrink:0}
+.file-item .file-status{flex-shrink:0;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:500}
+.file-item .file-status.success{background:rgba(100,255,150,.1);color:#64ff96}
+.file-item .file-status.error{background:rgba(255,100,100,.1);color:#ff6464}
+.file-item .file-status.processing{background:rgba(100,200,255,.1);color:#64c8ff}
+.file-item .file-remove{width:20px;height:20px;border:none;border-radius:50%;background:rgba(255,255,255,.05);color:#888;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.file-item .file-remove:hover{background:rgba(255,100,100,.15);color:#ff6464}
+
+.upload-actions{display:flex;gap:8px;margin-top:12px}
+.upload-btn{flex:1;padding:8px 12px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.upload-btn.primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
+.upload-btn.primary:hover{opacity:.9;transform:scale(1.01)}
+.upload-btn.primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.upload-btn.secondary{background:rgba(255,255,255,.06);color:#aaa;border:1px solid rgba(255,255,255,.08)}
+.upload-btn.secondary:hover{background:rgba(255,255,255,.1);color:#ddd}
+
+.upload-progress{margin-top:8px;padding:8px 12px;background:rgba(100,200,255,.05);border-radius:8px;font-size:11px;color:#64c8ff;display:none}
+.upload-progress.show{display:flex;align-items:center;gap:8px}
+.upload-progress .spinner{width:14px;height:14px;border:2px solid rgba(100,200,255,.2);border-top-color:#64c8ff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.kb-stats{margin-top:10px;padding:8px 12px;background:rgba(100,200,255,.04);border-radius:8px;font-size:11px;color:#888;display:flex;gap:16px}
+.kb-stats .stat{display:flex;align-items:center;gap:4px}
+.kb-stats .stat-value{color:#64c8ff;font-weight:600}
+
+/* Chat Area */
+.chat-area{flex:1;overflow-y:auto;padding:12px 0 8px;scroll-behavior:smooth}
+.chat-area::-webkit-scrollbar{width:4px}
+.chat-area::-webkit-scrollbar-track{background:transparent}
+.chat-area::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* Message Bubbles */
+.msg{max-width:88%;margin-bottom:14px;animation:fadeSlide .35s ease;position:relative}
+.msg-user{margin-left:auto}
+.msg-bot{margin-right:auto}
+.msg-bubble{padding:12px 16px;border-radius:16px;font-size:15px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.msg-user .msg-bubble{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border-bottom-right-radius:4px}
+.msg-bot .msg-bubble{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#eee;border-bottom-left-radius:4px}
+.msg-time{font-size:11px;color:#555;margin-top:4px;padding:0 6px}
+.msg-user .msg-time{text-align:right}
+.msg-bot .msg-time{text-align:left}
+
+/* Answer Cards */
+.answer-text{font-size:15px;line-height:1.8;margin-bottom:6px}
+.answer-text mark{background:rgba(100,200,255,.15);color:#64c8ff;padding:1px 6px;border-radius:3px}
+.answer-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
+.meta-tag{font-size:11px;padding:2px 10px;border-radius:12px;background:rgba(255,255,255,.05);color:#888;border:1px solid rgba(255,255,255,.06)}
+.meta-tag.hit{background:rgba(100,200,255,.1);color:#64c8ff;border-color:rgba(100,200,255,.2)}
+.meta-tag.intent{background:rgba(255,200,100,.1);color:#ffc864;border-color:rgba(255,200,100,.2)}
+.sources-toggle{font-size:12px;color:#64c8ff;cursor:pointer;padding:4px 0;display:inline-block;transition:opacity .2s}
+.sources-toggle:hover{opacity:.7}
+.sources-content{display:none;margin-top:8px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px}
+.sources-content.open{display:block}
+.source-item{padding:8px 10px;border-left:2px solid rgba(100,200,255,.2);margin-bottom:6px;background:rgba(255,255,255,.02);border-radius:0 6px 6px 0;font-size:12px;line-height:1.5;color:#999}
+.source-item .page{color:#64c8ff;font-weight:500}
+.source-item .score{color:#666;font-size:11px}
+
+/* Typing Indicator */
+.typing{display:none;align-items:center;gap:10px;padding:10px 4px;margin-bottom:14px}
+.typing.show{display:flex}
+.typing-dots{display:flex;gap:4px;padding:12px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;border-bottom-left-radius:4px}
+.typing-dots span{width:8px;height:8px;background:#888;border-radius:50%;animation:bounce 1.4s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.typing-label{font-size:12px;color:#666;white-space:nowrap}
+
+/* Input Area */
+.input-area{flex-shrink:0;padding:10px 0 16px;background:linear-gradient(0deg,#0f0c29 0%,transparent 100%);position:sticky;bottom:0}
+.input-box{display:flex;align-items:flex-end;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:6px 6px 6px 14px;transition:border-color .2s}
+.input-box:focus-within{border-color:#64c8ff;box-shadow:0 0 0 3px rgba(100,200,255,.08)}
+.input-box textarea{flex:1;background:transparent;border:none;color:#e8e8e8;font-size:15px;font-family:inherit;resize:none;outline:none;padding:8px 0;max-height:120px;line-height:1.5}
+.input-box textarea::placeholder{color:#555}
+.icon-btn{width:38px;height:38px;border:none;border-radius:50%;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+.btn-voice{background:rgba(255,255,255,.06);color:#aaa}
+.btn-voice:hover{background:rgba(255,255,255,.12);color:#eee}
+.btn-voice.listening{background:rgba(255,80,80,.25);color:#ff6b6b;animation:pulseGlow 1.2s infinite}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,80,80,.3)}50%{box-shadow:0 0 0 8px rgba(255,80,80,0)}}
+.btn-send{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
+.btn-send:hover{opacity:.9;transform:scale(1.05)}
+.btn-send:disabled{opacity:.35;transform:none;cursor:not-allowed}
+.shortcuts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.shortcut-tag{padding:4px 12px;background:rgba(100,200,255,.06);border:1px solid rgba(100,200,255,.1);border-radius:16px;color:#64c8ff;font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.shortcut-tag:hover{background:rgba(100,200,255,.15);border-color:rgba(100,200,255,.25)}
+
+/* Compare Mode Toggle */
+.btn-compare{background:rgba(255,200,100,.08);color:#ffc864;font-size:14px;padding:6px 12px;border:none;border-radius:20px;cursor:pointer;transition:all .2s;position:absolute;right:0;top:-30px;white-space:nowrap}
+.btn-compare:hover{background:rgba(255,200,100,.15)}
+.btn-compare.active{background:rgba(255,200,100,.18);border:1px solid rgba(255,200,100,.3)}
+
+/* Compare Results */
+.compare-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:0;overflow:hidden;margin-top:4px}
+.compare-col{padding:14px 16px}
+.compare-col.rag{border-bottom:1px solid rgba(100,200,255,.12)}
+.compare-col.llm{background:rgba(255,255,255,.02)}
+.compare-label{font-size:11px;font-weight:600;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.compare-label .tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.compare-label .tag.rag-tag{background:rgba(100,200,255,.15);color:#64c8ff}
+.compare-label .tag.llm-tag{background:rgba(255,150,100,.15);color:#ff9664}
+.compare-label .tag.hit-check{background:rgba(100,255,150,.12);color:#64ff96;font-size:9px}
+.compare-answer{font-size:14px;line-height:1.7;color:#ddd;white-space:pre-wrap;word-break:break-word}
+.compare-answer .no-ctx{color:#666;font-style:italic}
+.compare-source-count{font-size:11px;color:#888;margin-top:4px}
+
+/* Analysis Bar */
+.analysis-bar{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.06)}
+.analysis-item{font-size:11px;padding:3px 10px;border-radius:12px;display:inline-flex;align-items:center;gap:4px}
+.analysis-item.win{background:rgba(100,200,255,.1);color:#64c8ff;border:1px solid rgba(100,200,255,.15)}
+.analysis-item.tie{background:rgba(255,255,255,.04);color:#888;border:1px solid rgba(255,255,255,.06)}
+.analysis-item.lose{background:rgba(255,100,100,.06);color:#ff6464;border:1px solid rgba(255,100,100,.1)}
+.error-bubble{color:#ff6b6b;font-size:14px;padding:8px 12px;background:rgba(255,50,50,.08);border-radius:10px;margin-top:4px}
+
+/* Empty State */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:#555;text-align:center}
+.empty-state .icon{font-size:52px;margin-bottom:14px;opacity:.3}
+.empty-state h3{font-size:18px;color:#777;margin-bottom:8px;font-weight:400}
+.empty-state p{font-size:13px;color:#555;line-height:1.6;max-width:400px}
+
+/* Mobile */
+@media(max-width:500px){
+  .container{padding:0 10px}
+  header h1{font-size:18px}
+  .msg{max-width:92%}
+  .msg-bubble{font-size:14px;padding:10px 14px}
+  .shortcut-tag{font-size:11px;padding:3px 10px}
+  .upload-panel{padding:12px}
+  .drop-zone{padding:16px 12px}
+}
+
+/* Scroll Anchor */
+.scroll-anchor{height:1px}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1 id="i18n_title">招股说明书智能问答</h1>
+    <p id="i18n_subtitle">支持多文件上传 · RAG问答系统</p>
+    <span class="badge">jieba语义分词 + Milvus + Query Understanding</span>
+    <button class="lang-toggle" id="langBtn" onclick="toggleLang()">中/EN</button>
+  </header>
+
+  <!-- 文件上传区域 -->
+  <div class="upload-section">
+    <div class="upload-toggle" id="uploadToggle" onclick="toggleUploadPanel()">
+      <div class="left">
+        <span class="icon">📁</span>
+        <span class="text"><span id="i18n_file_mgmt">文件管理</span> <span id="fileCountBadge" style="color:#64c8ff">(0)</span></span>
+      </div>
+      <span class="arrow">▾</span>
+    </div>
+    
+    <div class="upload-panel" id="uploadPanel">
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div class="drop-icon">📄</div>
+        <div class="drop-text" id="i18n_drop_text">点击选择或拖拽文件到此处</div>
+        <div class="drop-hint" id="i18n_drop_hint">支持 PDF 文件，可同时选择多个</div>
+        <input type="file" id="fileInput" accept=".pdf" multiple onchange="handleFileSelect(event)">
+      </div>
+      
+      <div class="file-list" id="fileList"></div>
+      
+      <div class="upload-progress" id="uploadProgress">
+        <div class="spinner"></div>
+        <span id="uploadProgressText" data-i18n="uploading">正在上传...</span>
+      </div>
+      
+      <div class="upload-actions">
+        <button class="upload-btn primary" id="uploadBtn" onclick="uploadFiles()" disabled data-i18n="upload_selected">上传选中文件</button>
+        <button class="upload-btn secondary" onclick="clearSelectedFiles()" data-i18n="clear">清空</button>
+        <button class="upload-btn secondary" onclick="reloadKnowledgeBase()" data-i18n="reload_kb">🔄 重载知识库</button>
+      </div>
+      
+      <div class="kb-stats" id="kbStats">
+        <div class="stat">📄 <span data-i18n="stat_files">文件</span>: <span class="stat-value" id="statFiles">0</span></div>
+        <div class="stat">📦 <span data-i18n="stat_chunks">分块</span>: <span class="stat-value" id="statChunks">0</span></div>
+        <div class="stat">💾 <span data-i18n="stat_status">状态</span>: <span class="stat-value" id="statStatus" data-i18n="status_ready">就绪</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <!-- Welcome -->
+    <div class="empty-state" id="welcome">
+      <div class="icon">📄</div>
+      <h3 id="i18n_welcome_title">请输入您的问题</h3>
+      <p id="i18n_welcome_desc">基于文档全文的智能问答，支持语音输入。您可以上传多个PDF文件构建知识库，然后提问。</p>
+    </div>
+    <!-- Messages injected here -->
+    <!-- Typing -->
+    <div class="typing" id="typing">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+      <span class="typing-label" id="i18n_typing">正在检索分析...</span>
+    </div>
+    <div class="scroll-anchor" id="scrollAnchor"></div>
+  </div>
+
+  <div class="input-area" style="position:relative">
+    <button class="btn-compare" id="compareBtn" onclick="toggleCompareMode()" data-i18n="compare_btn">🔍 对比分析</button>
+    <div class="input-box">
+      <textarea id="question" rows="1" data-i18n-placeholder="placeholder" placeholder="输入您的问题..." autofocus></textarea>
+      <button class="icon-btn btn-voice" id="voiceBtn" data-i18n-title="voice_input" title="语音输入" onclick="toggleVoice()">🎤</button>
+      <button class="icon-btn btn-send" id="sendBtn" onclick="send()">➤</button>
+    </div>
+    <div class="shortcuts" id="shortcutsContainer">
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-i18n="q1">注册资本是多少？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-i18n="q2">法定代表人是谁？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-i18n="q3">军用领域收入多少？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-i18n="q4">参与制定了什么技术标准？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-i18n="q5">下游行业有哪些？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-i18n="q6">军用收入占比多少？</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== i18n Translations ==========
+const translations = {
+  zh: {
+    title: '招股说明书智能问答',
+    subtitle: '支持多文件上传 · RAG问答系统',
+    file_mgmt: '文件管理',
+    drop_text: '点击选择或拖拽文件到此处',
+    drop_hint: '支持 PDF 文件，可同时选择多个',
+    uploading: '正在上传...',
+    upload_selected: '上传选中文件',
+    clear: '清空',
+    reload_kb: '🔄 重载知识库',
+    stat_files: '文件',
+    stat_chunks: '分块',
+    stat_status: '状态',
+    status_ready: '就绪',
+    welcome_title: '请输入您的问题',
+    welcome_desc: '基于文档全文的智能问答，支持语音输入。您可以上传多个PDF文件构建知识库，然后提问。',
+    typing: '正在检索分析...',
+    typing_compare: '正在对比分析...',
+    compare_btn: '🔍 对比分析',
+    compare_btn_on: '🔍 对比模式 ON',
+    placeholder: '输入您的问题...',
+    placeholder_compare: '输入问题，对比RAG vs 纯LLM...',
+    voice_input: '语音输入',
+    voice_stop: '点击停止录音',
+    q1: '注册资本是多少？',
+    q2: '法定代表人是谁？',
+    q3: '军用领域收入多少？',
+    q4: '参与制定了什么技术标准？',
+    q5: '下游行业有哪些？',
+    q6: '军用收入占比多少？',
+    upload_n_files: '上传 {n} 个文件',
+    upload_progress_n: '正在上传 {n} 个文件...',
+    upload_complete: '上传完成',
+    success: '成功',
+    partial: '部分成功',
+    error: '失败',
+    upload_failed: '上传失败',
+    http_error: '服务器错误',
+    network_error: '网络请求失败',
+    voice_not_supported: '当前浏览器不支持语音识别。请使用 Chrome 浏览器。',
+    voice_error: '语音识别错误',
+    delete_confirm: '确定要删除文件 {name} 吗？',
+    delete_failed: '删除失败',
+    reload_loading: '重载中...',
+    reload_done: '知识库重载完成！已加载 {files} 个文件，共 {chunks} 个分块。',
+    reload_failed: '重载失败',
+    no_answer: '（无回答）',
+    no_data: '（无数据）',
+    hit_standard: '✓ 命中标准答案',
+    no_sources: '无检索来源',
+    sources_count: '{n}个参考来源',
+    page_label: '第{p}页',
+    score_label: '相关度',
+    compare_title: '🔍 对比分析结果',
+    compare_rag_label: '基于PDF检索',
+    compare_llm_label: '纯大模型（无上下文）',
+    compare_api_unavailable: '(API不可用)',
+    compare_gt_hit: '✓ 标准答案',
+    compare_src_count: '📎 {n}个参考来源',
+    compare_no_src: '⚠ 未检索到PDF来源',
+    compare_has_pdf: '📄 有PDF来源',
+    compare_no_pdf: '📄 无PDF来源',
+    compare_rag_detail: '📏 RAG更详细',
+    compare_llm_detail: '📏 LLM更详细',
+    compare_similar: '📏 长度相近',
+    compare_rag_faster: '⚡ RAG更快',
+    compare_llm_faster: '⚡ LLM更快',
+    compare_gt_match: '⭐ 命中标准答案',
+    files_label: '📄 文件',
+    chunks_label: '📦 分块',
+    status_label: '💾 状态'
+  },
+  en: {
+    title: 'Prospectus Smart Q&A',
+    subtitle: 'Multi-file Upload · RAG Q&A System',
+    file_mgmt: 'File Management',
+    drop_text: 'Click to select or drag files here',
+    drop_hint: 'PDF files supported, select multiple',
+    uploading: 'Uploading...',
+    upload_selected: 'Upload Selected Files',
+    clear: 'Clear',
+    reload_kb: '🔄 Reload Knowledge Base',
+    stat_files: 'Files',
+    stat_chunks: 'Chunks',
+    stat_status: 'Status',
+    status_ready: 'Ready',
+    welcome_title: 'Please enter your question',
+    welcome_desc: 'Intelligent Q&A based on full document text, with voice input support. Upload multiple PDF files to build a knowledge base, then ask questions.',
+    typing: 'Searching and analyzing...',
+    typing_compare: 'Comparing and analyzing...',
+    compare_btn: '🔍 Compare Analysis',
+    compare_btn_on: '🔍 Compare Mode ON',
+    placeholder: 'Enter your question...',
+    placeholder_compare: 'Enter question, compare RAG vs pure LLM...',
+    voice_input: 'Voice Input',
+    voice_stop: 'Click to stop recording',
+    q1: 'What is the registered capital?',
+    q2: 'Who is the legal representative?',
+    q3: 'What is the military sector revenue?',
+    q4: 'What technical standards were involved?',
+    q5: 'What are the downstream industries?',
+    q6: 'What is the military revenue ratio?',
+    upload_n_files: 'Upload {n} files',
+    upload_progress_n: 'Uploading {n} files...',
+    upload_complete: 'Upload complete',
+    success: 'success',
+    partial: 'partial',
+    error: 'failed',
+    upload_failed: 'Upload failed',
+    http_error: 'Server error',
+    network_error: 'Network request failed',
+    voice_not_supported: 'Speech recognition not supported. Please use Chrome browser.',
+    voice_error: 'Speech recognition error',
+    delete_confirm: 'Are you sure to delete file {name}?',
+    delete_failed: 'Delete failed',
+    reload_loading: 'Reloading...',
+    reload_done: 'Knowledge base reloaded! Loaded {files} files, {chunks} chunks total.',
+    reload_failed: 'Reload failed',
+    no_answer: '(No answer)',
+    no_data: '(No data)',
+    hit_standard: '✓ Standard answer matched',
+    no_sources: 'No sources found',
+    sources_count: '{n} reference sources',
+    page_label: 'Page {p}',
+    score_label: 'Relevance',
+    compare_title: '🔍 Comparison Results',
+    compare_rag_label: 'Based on PDF retrieval',
+    compare_llm_label: 'Pure LLM (no context)',
+    compare_api_unavailable: '(API unavailable)',
+    compare_gt_hit: '✓ Standard answer',
+    compare_src_count: '📎 {n} reference sources',
+    compare_no_src: '⚠ No PDF sources found',
+    compare_has_pdf: '📄 Has PDF sources',
+    compare_no_pdf: '📄 No PDF sources',
+    compare_rag_detail: '📏 RAG more detailed',
+    compare_llm_detail: '📏 LLM more detailed',
+    compare_similar: '📏 Similar length',
+    compare_rag_faster: '⚡ RAG faster',
+    compare_llm_faster: '⚡ LLM faster',
+    compare_gt_match: '⭐ Standard answer matched',
+    files_label: '📄 Files',
+    chunks_label: '📦 Chunks',
+    status_label: '💾 Status'
+  }
+};
+
+// ========== Language State ==========
+let currentLang = localStorage.getItem('lang') || 'zh';
+
+function t(key, params) {
+  let text = (translations[currentLang] || translations.zh)[key] || key;
+  if (params) {
+    Object.keys(params).forEach(function(k) {
+      text = text.replace(new RegExp('\\{' + k + '\\}', 'g'), params[k]);
+    });
+  }
+  return text;
+}
+
+function toggleLang() {
+  currentLang = currentLang === 'zh' ? 'en' : 'zh';
+  localStorage.setItem('lang', currentLang);
+  applyLang();
+}
+
+function applyLang() {
+  // Update button text
+  document.getElementById('langBtn').textContent = currentLang === 'zh' ? '中/EN' : 'EN/中';
+
+  // Text content translations
+  var textMap = {
+    'i18n_title': 'title',
+    'i18n_subtitle': 'subtitle',
+    'i18n_file_mgmt': 'file_mgmt',
+    'i18n_drop_text': 'drop_text',
+    'i18n_drop_hint': 'drop_hint',
+    'i18n_welcome_title': 'welcome_title',
+    'i18n_welcome_desc': 'welcome_desc',
+    'i18n_typing': 'typing'
+  };
+  Object.keys(textMap).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = t(textMap[id]);
+  });
+
+  // data-i18n attribute translations
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
+    if (key && translations[currentLang][key]) {
+      el.textContent = translations[currentLang][key];
+    }
+  });
+
+  // data-i18n-placeholder
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-placeholder');
+    if (key) el.placeholder = t(key);
+  });
+
+  // data-i18n-title
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n-title');
+    if (key) el.title = t(key);
+  });
+
+  // Update compare button state
+  var compareBtn = document.getElementById('compareBtn');
+  if (compareMode) {
+    compareBtn.textContent = t('compare_btn_on');
+  } else {
+    compareBtn.textContent = t('compare_btn');
+  }
+
+  // Update placeholder based on compare mode
+  var questionInput = document.getElementById('question');
+  questionInput.placeholder = compareMode ? t('placeholder_compare') : t('placeholder');
+
+  // Update voice button title
+  var voiceBtn = document.getElementById('voiceBtn');
+  if (!voiceBtn.classList.contains('listening')) {
+    voiceBtn.title = t('voice_input');
+  }
+
+  // Update typing label
+  var typingLabel = document.querySelector('.typing-label');
+  if (typingLabel && !compareMode) {
+    typingLabel.textContent = t('typing');
+  }
+
+  // Update statStatus text
+  var statStatus = document.getElementById('statStatus');
+  if (statStatus) {
+    var val = statStatus.getAttribute('data-i18n-val');
+    if (val) {
+      statStatus.textContent = t(val);
+    }
+  }
+
+  // Update upload button
+  updateUploadButton();
+
+  // Update kb-stats labels
+  document.querySelector('[data-i18n="stat_files"]').textContent = t('stat_files');
+  document.querySelector('[data-i18n="stat_chunks"]').textContent = t('stat_chunks');
+  document.querySelector('[data-i18n="stat_status"]').textContent = t('stat_status');
+
+  // Update page title
+  document.title = currentLang === 'zh'
+    ? 'RAG问答系统 - 招股说明书智能问答'
+    : 'RAG Q&A System - Prospectus Smart Q&A';
+}
+
+// ========== State ==========
+let isProcessing = false;
+let recognition = null;
+let compareMode = false;
+let selectedFiles = [];  // 待上传的文件列表
+
+// ========== Upload Panel ==========
+function toggleUploadPanel() {
+  const toggle = document.getElementById('uploadToggle');
+  const panel = document.getElementById('uploadPanel');
+  const isOpen = panel.classList.contains('show');
+  
+  if (isOpen) {
+    panel.classList.remove('show');
+    toggle.classList.remove('open');
+  } else {
+    panel.classList.add('show');
+    toggle.classList.add('open');
+    loadExistingFiles();  // 打开时加载已有文件列表
+  }
+}
+
+// ========== File Selection ==========
+function handleFileSelect(event) {
+  const files = event.target.files;
+  if (!files || files.length === 0) return;
+  
+  // 添加到选中列表
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    // 检查是否已存在
+    const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+    if (!exists) {
+      selectedFiles.push(file);
+    }
+  }
+  
+  updateFileList();
+  updateUploadButton();
+  // 清空input以便可以再次选择相同文件
+  event.target.value = '';
+}
+
+// ========== Drag and Drop ==========
+const dropZone = document.getElementById('dropZone');
+
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZone.classList.add('drag-over');
+});
+
+dropZone.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZone.classList.remove('drag-over');
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  dropZone.classList.remove('drag-over');
+  
+  const files = e.dataTransfer.files;
+  if (!files || files.length === 0) return;
+  
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    if (file.name.endsWith('.pdf')) {
+      const exists = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+      if (!exists) {
+        selectedFiles.push(file);
+      }
+    }
+  }
+  
+  updateFileList();
+  updateUploadButton();
+});
+
+// ========== File List UI ==========
+function updateFileList() {
+  const container = document.getElementById('fileList');
+  container.innerHTML = '';
+  
+  selectedFiles.forEach((file, index) => {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    
+    const sizeStr = formatFileSize(file.size);
+    item.innerHTML = `
+      <span class="file-icon">📄</span>
+      <span class="file-name" title="${file.name}">${file.name}</span>
+      <span class="file-size">${sizeStr}</span>
+      <button class="file-remove" onclick="removeSelectedFile(${index})" title="×">×</button>
+    `;
+    
+    container.appendChild(item);
+  });
+}
+
+function removeSelectedFile(index) {
+  selectedFiles.splice(index, 1);
+  updateFileList();
+  updateUploadButton();
+}
+
+function clearSelectedFiles() {
+  selectedFiles = [];
+  updateFileList();
+  updateUploadButton();
+}
+
+function updateUploadButton() {
+  const btn = document.getElementById('uploadBtn');
+  btn.disabled = selectedFiles.length === 0;
+  btn.textContent = selectedFiles.length > 0 
+    ? t('upload_n_files', {n: selectedFiles.length})
+    : t('upload_selected');
+}
+
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+// ========== Upload Files ==========
+async function uploadFiles() {
+  if (selectedFiles.length === 0) return;
+  
+  const progress = document.getElementById('uploadProgress');
+  const progressText = document.getElementById('uploadProgressText');
+  const uploadBtn = document.getElementById('uploadBtn');
+  
+  progress.classList.add('show');
+  progressText.textContent = t('upload_progress_n', {n: selectedFiles.length});
+  uploadBtn.disabled = true;
+  
+  const formData = new FormData();
+  formData.append('lang', currentLang);
+  selectedFiles.forEach(file => {
+    formData.append('files', file);
+  });
+  
+  try {
+    const resp = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (!resp.ok) {
+      throw new Error(t('upload_failed') + ': HTTP ' + resp.status);
+    }
+    
+    const data = await resp.json();
+    
+    // 显示结果
+    let successCount = data.summary.success;
+    let partialCount = data.summary.partial;
+    let errorCount = data.summary.error;
+    
+    let message = t('upload_complete') + ': ' + successCount + ' ' + t('success');
+    if (partialCount > 0) message += ', ' + partialCount + ' ' + t('partial');
+    if (errorCount > 0) message += ', ' + errorCount + ' ' + t('error');
+    
+    progressText.textContent = message;
+    
+    // 清空选中列表
+    selectedFiles = [];
+    updateFileList();
+    updateUploadButton();
+    
+    // 刷新已有文件列表
+    loadExistingFiles();
+    
+    // 3秒后隐藏进度
+    setTimeout(() => {
+      progress.classList.remove('show');
+    }, 3000);
+    
+  } catch (e) {
+    progressText.textContent = t('upload_failed') + ': ' + e.message;
+    setTimeout(() => {
+      progress.classList.remove('show');
+    }, 3000);
+  }
+  
+  uploadBtn.disabled = selectedFiles.length === 0;
+}
+
+// ========== Load Existing Files ==========
+async function loadExistingFiles() {
+  try {
+    const resp = await fetch('/api/files?lang=' + currentLang);
+    if (!resp.ok) return;
+    
+    const data = await resp.json();
+    const container = document.getElementById('fileList');
+    
+    // 显示已有文件（只读）
+    data.files.forEach(file => {
+      const item = document.createElement('div');
+      item.className = 'file-item';
+      
+      const sizeStr = formatFileSize(file.size);
+      const typeLabel = file.type === 'default' ? ' [默认]' : '';
+      item.innerHTML = `
+        <span class="file-icon">📄</span>
+        <span class="file-name" title="${file.filename}${typeLabel}">${file.filename}${typeLabel}</span>
+        <span class="file-size">${sizeStr}</span>
+        ${file.type !== 'default' ? `<button class="file-remove" onclick="deleteFile('${file.filename}')" title="×">×</button>` : ''}
+      `;
+      
+      container.appendChild(item);
+    });
+    
+    // 更新统计
+    document.getElementById('fileCountBadge').textContent = `(${data.count})`;
+    
+  } catch (e) {
+    console.error('Failed to load file list:', e);
+  }
+}
+
+// ========== Delete File ==========
+async function deleteFile(filename) {
+  if (!confirm(t('delete_confirm', {name: filename}))) return;
+  
+  try {
+    const resp = await fetch(`/api/files/${encodeURIComponent(filename)}?lang=${currentLang}`, {
+      method: 'DELETE'
+    });
+    
+    if (!resp.ok) {
+      const data = await resp.json();
+      alert(t('delete_failed') + ': ' + (data.error || ''));
+      return;
+    }
+    
+    // 刷新列表
+    loadExistingFiles();
+    
+  } catch (e) {
+    alert(t('delete_failed') + ': ' + e.message);
+  }
+}
+
+// ========== Reload Knowledge Base ==========
+async function reloadKnowledgeBase() {
+  const statusEl = document.getElementById('statStatus');
+  statusEl.textContent = t('reload_loading');
+  statusEl.style.color = '#ffc864';
+  statusEl.setAttribute('data-i18n-val', '');
+  
+  try {
+    const resp = await fetch('/api/reload?lang=' + currentLang, { method: 'POST' });
+    
+    if (!resp.ok) {
+      throw new Error(t('reload_failed'));
+    }
+    
+    const data = await resp.json();
+    statusEl.textContent = t('status_ready');
+    statusEl.style.color = '#64ff96';
+    statusEl.setAttribute('data-i18n-val', 'status_ready');
+    
+    // 显示成功消息
+    addBotMsg({
+      answer: '✅ ' + t('reload_done', {files: data.files_count, chunks: data.chunks_count}),
+      sources: [],
+      time_seconds: 0,
+      gt_matched: false,
+      intent: 'system'
+    });
+    
+  } catch (e) {
+    statusEl.textContent = t('reload_failed');
+    statusEl.style.color = '#ff6464';
+    statusEl.setAttribute('data-i18n-val', '');
+  }
+}
+
+// ========== Compare Mode Toggle ==========
+function toggleCompareMode(){
+  compareMode = !compareMode;
+  const btn = document.getElementById('compareBtn');
+  const inp = document.getElementById('question');
+  if (compareMode) {
+    btn.classList.add('active');
+    btn.textContent = t('compare_btn_on');
+    inp.placeholder = t('placeholder_compare');
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = t('compare_btn');
+    inp.placeholder = t('placeholder');
+  }
+  inp.focus();
+}
+
+// ========== Compare Send ==========
+async function compareSend(){
+  const q = questionInput.value.trim();
+  if (!q || isProcessing) return;
+
+  isProcessing = true;
+  sendBtn.disabled = true;
+
+  addUserMsg(q);
+  questionInput.value = '';
+  questionInput.style.height = 'auto';
+  typing.querySelector('.typing-label').textContent = t('typing_compare');
+  typing.classList.add('show');
+  scrollToBottom();
+
+  try {
+    const resp = await fetch('/api/compare', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q, top_k: 5, lang: currentLang })
+    });
+    typing.classList.remove('show');
+    if (!resp.ok){
+      addErrorMsg(t('http_error') + ' (' + resp.status + ')');
+      isProcessing = false;
+      sendBtn.disabled = false;
+      return;
+    }
+    const data = await resp.json();
+    addCompareMsg(data);
+    scrollToBottom();
+  } catch(e){
+    typing.classList.remove('show');
+    addErrorMsg(t('network_error') + ': ' + e.message);
+    scrollToBottom();
+  }
+
+  isProcessing = false;
+  sendBtn.disabled = false;
+  questionInput.focus();
+}
+
+// ========== Add Compare Message ==========
+function addCompareMsg(data){
+  welcome.style.display = 'none';
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot';
+  const t_ = new Date().toLocaleTimeString();
+
+  let srcCount = data.rag && data.rag.sources ? data.rag.sources.length : 0;
+  let hasCtx = data.rag && data.rag.has_context;
+  let ragTime = data.rag ? data.rag.time_seconds.toFixed(2) : '-';
+  let llmTime = data.llm_only ? data.llm_only.time_seconds.toFixed(2) : '-';
+  let match = data.analysis ? data.analysis.answers_match : false;
+  let ragLen = data.analysis ? data.analysis.rag_len : 0;
+  let llmLen = data.analysis ? data.analysis.llm_len : 0;
+
+  let analysis = '';
+  if (data.analysis) {
+    const items = [];
+    if (data.analysis.rag_has_sources) items.push({ text: t('compare_has_pdf'), cls: 'win' });
+    else items.push({ text: t('compare_no_pdf'), cls: 'lose' });
+    if (data.analysis.rag_is_more_detailed) items.push({ text: t('compare_rag_detail'), cls: 'win' });
+    else if (Math.abs(ragLen - llmLen) < 10) items.push({ text: t('compare_similar'), cls: 'tie' });
+    else items.push({ text: t('compare_llm_detail'), cls: 'lose' });
+    if (data.analysis.rag_is_faster) items.push({ text: t('compare_rag_faster'), cls: 'win' });
+    else items.push({ text: t('compare_llm_faster'), cls: 'lose' });
+    if (data.rag && data.rag.gt_matched) items.push({ text: t('compare_gt_match'), cls: 'win' });
+    items.forEach(function(it){ analysis += '<span class="analysis-item ' + it.cls + '">' + it.text + '</span>'; });
+  }
+
+  let ragAnswer = data.rag ? escHtml(data.rag.answer || t('no_answer')) : t('no_data');
+  let llmAnswer = data.llm_only ? escHtml(data.llm_only.answer || t('no_answer')) : t('no_data');
+  let ragSrcInfo = srcCount > 0 ? '<div class="compare-source-count">' + t('compare_src_count', {n: srcCount}) + '</div>' : '<div class="compare-source-count" style="color:#555">' + t('compare_no_src') + '</div>';
+
+  let html = '<div class="compare-card">' +
+    '<div class="compare-col rag">' +
+      '<div class="compare-label"><span class="tag rag-tag">RAG</span>' + t('compare_rag_label') + (data.rag && data.rag.gt_matched ? ' <span class="tag hit-check">' + t('compare_gt_hit') + '</span>' : '') + '</div>' +
+      '<div class="compare-answer">' + ragAnswer + '</div>' +
+      '<div style="font-size:11px;color:#555;margin-top:4px">⏱ ' + ragTime + 's' + (data.rag && data.rag.intent ? ' | Intent: ' + escHtml(data.rag.intent) : '') + '</div>' +
+      ragSrcInfo +
+    '</div>' +
+    '<div class="compare-col llm">' +
+      '<div class="compare-label"><span class="tag llm-tag">LLM</span>' + t('compare_llm_label') + (data.llm_only && data.llm_only.has_api === false ? ' <span style="color:#ff6b6b;font-size:10px">' + t('compare_api_unavailable') + '</span>' : '') + '</div>' +
+      '<div class="compare-answer">' + (data.llm_only && data.llm_only.has_api === false ? '<span class="no-ctx">' + llmAnswer + '</span>' : llmAnswer) + '</div>' +
+      '<div style="font-size:11px;color:#555;margin-top:4px">⏱ ' + llmTime + 's</div>' +
+    '</div>' +
+    (analysis ? '<div class="analysis-bar">' + analysis + '</div>' : '') +
+  '</div>';
+
+  div.innerHTML = '<div class="msg-bubble">' +
+    '<div style="font-size:11px;color:#ffc864;font-weight:600;margin-bottom:6px;letter-spacing:1px">' + t('compare_title') + '</div>' +
+    html +
+    '</div><div class="msg-time">' + t_ + '</div>';
+
+  chatArea.insertBefore(div, typing);
+  scrollToBottom();
+  return div;
+}
+
+// ========== DOM ==========
+const chatArea = document.getElementById('chatArea');
+const questionInput = document.getElementById('question');
+const sendBtn = document.getElementById('sendBtn');
+const voiceBtn = document.getElementById('voiceBtn');
+const typing = document.getElementById('typing');
+const welcome = document.getElementById('welcome');
+const anchor = document.getElementById('scrollAnchor');
+
+// ========== Auto-resize ==========
+questionInput.addEventListener('input', function(){
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+// ========== Enter to Send ==========
+questionInput.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); compareMode ? compareSend() : send(); }
+});
+
+// ========== Scroll helpers ==========
+function scrollToBottom(){ anchor.scrollIntoView({ behavior: 'smooth' }); }
+
+// ========== Create Message ==========
+function addMsg(role, html, timeText){
+  welcome.style.display = 'none';
+  const div = document.createElement('div');
+  div.className = 'msg msg-' + role;
+  div.innerHTML = '<div class="msg-bubble">' + html + '</div>' +
+    '<div class="msg-time">' + (timeText || new Date().toLocaleTimeString()) + '</div>';
+  chatArea.insertBefore(div, typing);
+  scrollToBottom();
+  return div;
+}
+
+function addUserMsg(text){
+  return addMsg('user', '<div class="answer-text">' + escHtml(text) + '</div>');
+}
+
+function addBotMsg(data){
+  let html = '<div class="answer-text">' + escHtml(data.answer || t('no_answer')) + '</div>';
+
+  // Meta tags
+  let meta = '';
+  if (data.gt_matched) meta += '<span class="meta-tag hit">' + t('hit_standard') + '</span>';
+  if (data.intent) meta += '<span class="meta-tag intent">' + escHtml(data.intent) + '</span>';
+  if (data.time_seconds) meta += '<span class="meta-tag">' + data.time_seconds.toFixed(2) + 's</span>';
+  if (data.backend) meta += '<span class="meta-tag">' + escHtml(data.backend) + '</span>';
+  if (meta) html += '<div class="answer-meta">' + meta + '</div>';
+
+  // Sources toggle
+  if (data.sources && data.sources.length > 0){
+    const sid = 'src_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+    html += '<span class="sources-toggle" onclick="toggleSources(\'' + sid + '\')">📎 ' + t('sources_count', {n: data.sources.length}) + ' ▾</span>';
+    html += '<div class="sources-content" id="' + sid + '">';
+    data.sources.forEach(function(s){
+      let snip = escHtml((s.snippet || '').substring(0, 240));
+      html += '<div class="source-item">' +
+        '<span class="page">' + t('page_label', {p: s.page || '?'}) + '</span> ' +
+        '<span class="score">' + t('score_label') + ': ' + (s.score ? s.score.toFixed(4) : 'N/A') + '</span><br>' + snip +
+        '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div style="font-size:12px;color:#555;margin-top:6px">' + t('no_sources') + '</div>';
+  }
+
+  return addMsg('bot', html);
+}
+
+function addErrorMsg(msg){
+  addMsg('bot', '<div class="error-bubble">⚠ ' + escHtml(msg) + '</div>');
+}
+
+// ========== Toggle Sources ==========
+function toggleSources(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('open');
+}
+
+// ========== Escape ==========
+function escHtml(s){
+  if (typeof s !== 'string') s = String(s || '');
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ========== Send ==========
+async function send(){
+  if (compareMode) { compareSend(); return; }
+  const q = questionInput.value.trim();
+  if (!q || isProcessing) return;
+
+  isProcessing = true;
+  sendBtn.disabled = true;
+
+  addUserMsg(q);
+  questionInput.value = '';
+  questionInput.style.height = 'auto';
+  typing.classList.add('show');
+  scrollToBottom();
+
+  try {
+    const resp = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q, top_k: 5, lang: currentLang })
+    });
+    typing.classList.remove('show');
+    if (!resp.ok){
+      const errText = await resp.text().catch(function(){ return ''; });
+      addErrorMsg(t('http_error') + ' (' + resp.status + ')' + (errText ? ': ' + errText.slice(0,150) : ''));
+      scrollToBottom();
+      isProcessing = false;
+      sendBtn.disabled = false;
+      return;
+    }
+    const data = await resp.json();
+    addBotMsg(data);
+    scrollToBottom();
+  } catch(e){
+    typing.classList.remove('show');
+    addErrorMsg(t('network_error') + ': ' + e.message);
+    scrollToBottom();
+  }
+
+  isProcessing = false;
+  sendBtn.disabled = false;
+  questionInput.focus();
+}
+
+// ========== Quick Ask ==========
+function quickAsk(el){
+  questionInput.value = el.textContent;
+  if (compareMode) { compareSend(); return; }
+  send();
+}
+
+// ========== Voice Input ==========
+function toggleVoice(){
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+    addErrorMsg(t('voice_not_supported'));
+    return;
+  }
+  if (recognition && voiceBtn.classList.contains('listening')){
+    recognition.stop();
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = currentLang === 'zh' ? 'zh-CN' : 'en-US';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  voiceBtn.classList.add('listening');
+  voiceBtn.textContent = '🔴';
+  voiceBtn.title = t('voice_stop');
+
+  let finalText = '';
+
+  recognition.onresult = function(e){
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++){
+      const result = e.results[i];
+      if (result.isFinal){ finalText += result[0].transcript; }
+      else { interim += result[0].transcript; }
+    }
+    questionInput.value = finalText + interim;
+    questionInput.style.height = 'auto';
+    questionInput.style.height = Math.min(questionInput.scrollHeight, 120) + 'px';
+  };
+
+  recognition.onend = function(){
+    voiceBtn.classList.remove('listening');
+    voiceBtn.textContent = '🎤';
+    voiceBtn.title = t('voice_input');
+    if (questionInput.value.trim()){
+      send();
+    }
+  };
+
+  recognition.onerror = function(e){
+    voiceBtn.classList.remove('listening');
+    voiceBtn.textContent = '🎤';
+    voiceBtn.title = t('voice_input');
+    if (e.error === 'no-speech') { /* silent */ }
+    else { addErrorMsg(t('voice_error') + ': ' + e.error); }
+  };
+
+  questionInput.value = '';
+  recognition.start();
+}
+
+// ========== Init: apply saved language ==========
+applyLang();
+</script>
+</body>
+</html>
