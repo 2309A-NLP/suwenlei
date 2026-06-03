@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>RAG问答系统 - 招股说明书智能问答</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans SC',sans-serif;background:linear-gradient(135deg,#0f0c29 0%,#1a1a3e 40%,#16213e 100%);min-height:100vh;color:#e0e0e0}
+.container{max-width:800px;margin:0 auto;padding:0 16px;display:flex;flex-direction:column;height:100vh}
+
+/* Header */
+header{text-align:center;padding:20px 0 14px;flex-shrink:0}
+header h1{font-size:22px;color:#fff;margin-bottom:4px;letter-spacing:.5px}
+header p{color:#888;font-size:12px;line-height:1.5}
+.badge{display:inline-block;background:rgba(100,200,255,.1);color:#64c8ff;padding:3px 12px;border-radius:20px;font-size:11px;margin-top:6px;border:1px solid rgba(100,200,255,.18)}
+
+/* Upload Area */
+.upload-section{margin:12px 0;flex-shrink:0}
+.upload-toggle{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;cursor:pointer;transition:all .2s}
+.upload-toggle:hover{background:rgba(255,255,255,.06);border-color:rgba(100,200,255,.2)}
+.upload-toggle .left{display:flex;align-items:center;gap:8px}
+.upload-toggle .icon{font-size:18px}
+.upload-toggle .text{font-size:13px;color:#aaa}
+.upload-toggle .file-count{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(100,200,255,.1);color:#64c8ff}
+.upload-toggle .arrow{font-size:12px;color:#666;transition:transform .2s}
+.upload-toggle.open .arrow{transform:rotate(180deg)}
+
+.upload-panel{display:none;margin-top:10px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;animation:fadeSlide .25s ease}
+.upload-panel.show{display:block}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+.drop-zone{border:2px dashed rgba(100,200,255,.2);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:all .2s}
+.drop-zone:hover{border-color:rgba(100,200,255,.4);background:rgba(100,200,255,.03)}
+.drop-zone.drag-over{border-color:#64c8ff;background:rgba(100,200,255,.08);transform:scale(1.01)}
+.drop-zone .drop-icon{font-size:32px;margin-bottom:8px;opacity:.5}
+.drop-zone .drop-text{font-size:13px;color:#888;line-height:1.6}
+.drop-zone .drop-hint{font-size:11px;color:#555;margin-top:6px}
+.drop-zone input[type="file"]{display:none}
+
+.file-list{margin-top:12px;max-height:160px;overflow-y:auto}
+.file-list::-webkit-scrollbar{width:3px}
+.file-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+.file-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:8px;margin-bottom:6px;font-size:12px;animation:fadeSlide .2s ease}
+.file-item .file-icon{font-size:16px}
+.file-item .file-name{flex:1;color:#ccc;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-item .file-size{color:#666;flex-shrink:0}
+.file-item .file-status{flex-shrink:0;padding:2px 6px;border-radius:6px;font-size:10px;font-weight:500}
+.file-item .file-status.success{background:rgba(100,255,150,.1);color:#64ff96}
+.file-item .file-status.error{background:rgba(255,100,100,.1);color:#ff6464}
+.file-item .file-status.processing{background:rgba(100,200,255,.1);color:#64c8ff}
+.file-item .file-remove{width:20px;height:20px;border:none;border-radius:50%;background:rgba(255,255,255,.05);color:#888;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.file-item .file-remove:hover{background:rgba(255,100,100,.15);color:#ff6464}
+
+.upload-actions{display:flex;gap:8px;margin-top:12px}
+.upload-btn{flex:1;padding:8px 12px;border:none;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s}
+.upload-btn.primary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
+.upload-btn.primary:hover{opacity:.9;transform:scale(1.02)}
+.upload-btn.primary:disabled{opacity:.35;transform:none;cursor:not-allowed}
+.upload-btn.secondary{background:rgba(255,255,255,.06);color:#aaa;border:1px solid rgba(255,255,255,.08)}
+.upload-btn.secondary:hover{background:rgba(255,255,255,.1);color:#ddd}
+
+.upload-progress{margin-top:8px;font-size:11px;color:#64c8ff;display:none}
+.upload-progress.show{display:block}
+
+/* Chat Area */
+.chat-area{flex:1;overflow-y:auto;padding:12px 0 8px;scroll-behavior:smooth}
+.chat-area::-webkit-scrollbar{width:4px}
+.chat-area::-webkit-scrollbar-track{background:transparent}
+.chat-area::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* Message Bubbles */
+.msg{max-width:88%;margin-bottom:14px;animation:fadeSlide .35s ease;position:relative}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.msg-user{margin-left:auto}
+.msg-bot{margin-right:auto}
+.msg-bubble{padding:12px 16px;border-radius:16px;font-size:15px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.msg-user .msg-bubble{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;border-bottom-right-radius:4px}
+.msg-bot .msg-bubble{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#eee;border-bottom-left-radius:4px}
+.msg-time{font-size:11px;color:#555;margin-top:4px;padding:0 6px}
+.msg-user .msg-time{text-align:right}
+.msg-bot .msg-time{text-align:left}
+
+/* Answer Cards */
+.answer-text{font-size:15px;line-height:1.8;margin-bottom:6px}
+.answer-text mark{background:rgba(100,200,255,.15);color:#64c8ff;padding:1px 6px;border-radius:3px}
+.answer-meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 6px}
+.meta-tag{font-size:11px;padding:2px 10px;border-radius:12px;background:rgba(255,255,255,.05);color:#888;border:1px solid rgba(255,255,255,.06)}
+.meta-tag.hit{background:rgba(100,200,255,.1);color:#64c8ff;border-color:rgba(100,200,255,.2)}
+.meta-tag.intent{background:rgba(255,200,100,.1);color:#ffc864;border-color:rgba(255,200,100,.2)}
+.sources-toggle{font-size:12px;color:#64c8ff;cursor:pointer;padding:4px 0;display:inline-block;transition:opacity .2s}
+.sources-toggle:hover{opacity:.7}
+.sources-content{display:none;margin-top:8px;border-top:1px solid rgba(255,255,255,.06);padding-top:10px}
+.sources-content.open{display:block}
+.source-item{padding:8px 10px;border-left:2px solid rgba(100,200,255,.2);margin-bottom:6px;background:rgba(255,255,255,.02);border-radius:0 6px 6px 0;font-size:12px;line-height:1.5;color:#999}
+.source-item .page{color:#64c8ff;font-weight:500}
+.source-item .score{color:#666;font-size:11px}
+
+/* Typing Indicator */
+.typing{display:none;align-items:center;gap:10px;padding:10px 4px;margin-bottom:14px}
+.typing.show{display:flex}
+.typing-dots{display:flex;gap:4px;padding:12px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;border-bottom-left-radius:4px}
+.typing-dots span{width:8px;height:8px;background:#888;border-radius:50%;animation:bounce 1.4s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.typing-label{font-size:12px;color:#666;white-space:nowrap}
+
+/* Input Area */
+.input-area{flex-shrink:0;padding:10px 0 16px;background:linear-gradient(0deg,#0f0c29 0%,transparent 100%);position:sticky;bottom:0}
+.input-box{display:flex;align-items:flex-end;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:6px 6px 6px 14px;transition:border-color .2s}
+.input-box:focus-within{border-color:#64c8ff;box-shadow:0 0 0 3px rgba(100,200,255,.08)}
+.input-box textarea{flex:1;background:transparent;border:none;color:#e8e8e8;font-size:15px;font-family:inherit;resize:none;outline:none;padding:8px 0;max-height:120px;line-height:1.5}
+.input-box textarea::placeholder{color:#555}
+.icon-btn{width:38px;height:38px;border:none;border-radius:50%;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
+.btn-voice{background:rgba(255,255,255,.06);color:#aaa}
+.btn-voice:hover{background:rgba(255,255,255,.12);color:#eee}
+.btn-voice.listening{background:rgba(255,80,80,.25);color:#ff6b6b;animation:pulseGlow 1.2s infinite}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,80,80,.3)}50%{box-shadow:0 0 0 8px rgba(255,80,80,0)}}
+.btn-send{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff}
+.btn-send:hover{opacity:.9;transform:scale(1.05)}
+.btn-send:disabled{opacity:.35;transform:none;cursor:not-allowed}
+.shortcuts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.shortcut-tag{padding:3px 10px;background:rgba(100,200,255,.06);border:1px solid rgba(100,200,255,.1);border-radius:14px;color:#64c8ff;font-size:11px;cursor:pointer;transition:all .2s;line-height:1.4}
+.shortcut-tag:hover{background:rgba(100,200,255,.15);border-color:rgba(100,200,255,.25)}
+
+/* Compare Mode Toggle */
+.btn-compare{background:rgba(255,200,100,.08);color:#ffc864;font-size:14px;padding:6px 12px;border:none;border-radius:20px;cursor:pointer;transition:all .2s;position:absolute;right:0;top:-30px;white-space:nowrap}
+.btn-compare:hover{background:rgba(255,200,100,.15)}
+.btn-compare.active{background:rgba(255,200,100,.18);border:1px solid rgba(255,200,100,.3)}
+
+/* Compare Results */
+.compare-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:0;overflow:hidden;margin-top:4px}
+.compare-col{padding:14px 16px}
+.compare-col.rag{border-bottom:1px solid rgba(100,200,255,.12)}
+.compare-col.llm{background:rgba(255,255,255,.02)}
+.compare-label{font-size:11px;font-weight:600;letter-spacing:1px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.compare-label .tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.compare-label .tag.rag-tag{background:rgba(100,200,255,.15);color:#64c8ff}
+.compare-label .tag.llm-tag{background:rgba(255,150,100,.15);color:#ff9664}
+.compare-label .tag.hit-check{background:rgba(100,255,150,.12);color:#64ff96;font-size:9px}
+.compare-answer{font-size:14px;line-height:1.7;color:#ddd;white-space:pre-wrap;word-break:break-word}
+.compare-answer .no-ctx{color:#666;font-style:italic}
+.compare-source-count{font-size:11px;color:#888;margin-top:4px}
+
+/* Analysis Bar */
+.analysis-bar{display:flex;gap:8px;flex-wrap:wrap;padding:10px 16px;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.06)}
+.analysis-item{font-size:11px;padding:3px 10px;border-radius:12px;display:inline-flex;align-items:center;gap:4px}
+.analysis-item.win{background:rgba(100,200,255,.1);color:#64c8ff;border:1px solid rgba(100,200,255,.15)}
+.analysis-item.tie{background:rgba(255,255,255,.04);color:#888;border:1px solid rgba(255,255,255,.06)}
+.analysis-item.lose{background:rgba(255,100,100,.06);color:#ff6464;border:1px solid rgba(255,100,100,.1)}
+.error-bubble{color:#ff6b6b;font-size:14px;padding:8px 12px;background:rgba(255,50,50,.08);border-radius:10px;margin-top:4px}
+
+/* Empty State */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:#555;text-align:center}
+.empty-state .icon{font-size:52px;margin-bottom:14px;opacity:.3}
+.empty-state h3{font-size:18px;color:#777;margin-bottom:8px;font-weight:400}
+.empty-state p{font-size:13px;color:#555;line-height:1.6;max-width:400px}
+
+/* Mobile */
+@media(max-width:500px){
+  .container{padding:0 10px}
+  header h1{font-size:18px}
+  .msg{max-width:92%}
+  .msg-bubble{font-size:14px;padding:10px 14px}
+  .shortcut-tag{font-size:11px;padding:3px 10px}
+}
+
+/* Scroll Anchor */
+.scroll-anchor{height:1px}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div></div>
+      <h1 id="headerTitle">招股说明书智能问答</h1>
+      <button id="langBtn" onclick="toggleLang()" style="background:linear-gradient(135deg,rgba(100,255,180,.15),rgba(64,200,130,.15));border:1.5px solid rgba(100,255,180,.35);color:#64ffb4;padding:6px 18px;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s;letter-spacing:.5px;box-shadow:0 0 12px rgba(100,255,180,.12)">EN</button>
+    </div>
+    <p id="headerDesc">武汉兴图新科电子股份有限公司招股意向书 · RAG问答系统</p>
+    <div class="badge" id="headerBadge">jieba语义分词 + Milvus + Query Understanding</div>
+  </header>
+
+  <!-- 文件上传区域 -->
+  <div class="upload-section" id="uploadSection">
+    <div class="upload-toggle" id="uploadToggle" onclick="toggleUploadPanel()">
+      <div class="left">
+        <span class="icon">📁</span>
+        <span class="text">文件管理</span>
+        <span class="file-count" id="fileCount">0 个文件</span>
+      </div>
+      <span class="arrow">▾</span>
+    </div>
+    <div class="upload-panel" id="uploadPanel">
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-icon">📤</div>
+        <div class="drop-text">拖拽PDF文件到此处，或点击选择</div>
+        <div class="drop-hint">支持同时上传多个PDF文件</div>
+        <input type="file" id="fileInput" multiple accept=".pdf" onchange="handleFileSelect(event)">
+      </div>
+      <div class="file-list" id="fileList"></div>
+      <div class="upload-progress" id="uploadProgress">⏳ 正在上传和处理...</div>
+      <div class="upload-actions">
+        <button class="upload-btn primary" id="uploadBtn" disabled onclick="uploadFiles()">📤 上传文件</button>
+        <button class="upload-btn secondary" onclick="reloadKnowledge()">🔄 重载知识库</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-area" id="chatArea">
+    <!-- Welcome -->
+    <div class="empty-state" id="welcome">
+      <div class="icon">📄</div>
+      <h3 id="welcomeTitle">请输入您的问题</h3>
+      <p id="welcomeDesc">基于招股说明书全文的智能问答，支持语音输入。您可以提问关于公司概况、财务数据、主营业务等方面的问题。</p>
+    </div>
+    <!-- Messages injected here -->
+    <!-- Typing -->
+    <div class="typing" id="typing">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+      <span class="typing-label" id="typingLabel">正在检索分析...</span>
+    </div>
+    <div class="scroll-anchor" id="scrollAnchor"></div>
+  </div>
+
+  <div class="input-area" style="position:relative">
+    <button class="btn-compare" id="compareBtn" onclick="toggleCompareMode()">🔍 对比分析</button>
+    <div class="input-box">
+      <textarea id="question" rows="1" placeholder="输入您的问题...（支持中英文）" autofocus></textarea>
+      <button class="icon-btn btn-voice" id="voiceBtn" title="语音输入" onclick="toggleVoice()">🎤</button>
+      <button class="icon-btn btn-send" id="sendBtn" onclick="send()">➤</button>
+    </div>
+    <div class="shortcuts" id="shortcuts" style="position:relative;flex-direction:column;gap:5px">
+      <div id="shortcutsTitle" style="font-size:11px;color:#666;margin-bottom:2px">📋 10道评测问题（点击提问）：</div>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="报告期内，武汉兴图新科电子股份有限公司来自军用领域的收入分别是多少？" data-en="What was the military revenue of Wuhan Xingtuchuan during the reporting period?">报告期内，武汉兴图新科电子股份有限公司来自军用领域的收入分别是多少？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="武汉兴图新科电子股份有限公司参与制定了哪个技术标准？" data-en="What technical standard did Wuhan Xingtuchuan participate in developing?">武汉兴图新科电子股份有限公司参与制定了哪个技术标准？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="报告期内，武汉兴图新科电子股份有限公司来自军用领域的收入占主营业务收入的比重分别是多少？" data-en="What was the proportion of military revenue to total revenue during the reporting period?">报告期内，武汉兴图新科电子股份有限公司来自军用领域的收入占主营业务收入的比重分别是多少？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="根据武汉兴图新科电子股份有限公司招股意向书，电子信息行业的上游涉及哪些企业？" data-en="What upstream enterprises are involved in the electronic information industry?">根据武汉兴图新科电子股份有限公司招股意向书，电子信息行业的上游涉及哪些企业？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="武汉兴图新科电子股份有限公司在哪个领域已经成为重要供应商？" data-en="In which field has Wuhan Xingtuchuan become an important supplier?">武汉兴图新科电子股份有限公司在哪个领域已经成为重要供应商？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="根据武汉兴图新科电子股份有限公司招股意向书，电子信息行业的下游主要包括哪些行业？" data-en="What are the main downstream industries of the electronic information industry?">根据武汉兴图新科电子股份有限公司招股意向书，电子信息行业的下游主要包括哪些行业？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="武汉兴图新科电子股份有限公司参与的哪个工程荣获了国家科技进步一等奖？" data-en="Which project of Wuhan Xingtuchuan won the National Science and Technology Progress Award?">武汉兴图新科电子股份有限公司参与的哪个工程荣获了国家科技进步一等奖？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="武汉兴图新科电子股份有限公司注册资本是多少？" data-en="What is the registered capital of Wuhan Xingtuchuan?">武汉兴图新科电子股份有限公司注册资本是多少？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="武汉兴图新科电子股份有限公司法定代表人是谁？" data-en="Who is the legal representative of Wuhan Xingtuchuan?">武汉兴图新科电子股份有限公司法定代表人是谁？</span>
+      <span class="shortcut-tag" onclick="quickAsk(this)" data-zh="武汉兴图新科电子股份有限公司计划使用本次发行募集资金的多少用于补充流动资金？" data-en="How much of the IPO proceeds will Wuhan Xingtuchuan use for working capital?">武汉兴图新科电子股份有限公司计划使用本次发行募集资金的多少用于补充流动资金？</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== State ==========
+let isProcessing = false;
+let recognition = null;
+let compareMode = false;
+let pendingFiles = []; // 待上传的文件列表
+
+let currentLang = 'zh';  // 当前语言
+
+// 多语言UI文本
+const I18N = {
+  zh: {
+    title: '招股说明书智能问答',
+    desc: '武汉兴图新科电子股份有限公司招股意向书 · RAG问答系统',
+    badge: 'jieba语义分词 + Milvus + Query Understanding',
+    welcome: '请输入您的问题',
+    welcomeDesc: '基于招股说明书全文的智能问答，支持语音输入。支持中英文提问，系统会用您使用的语言回答。',
+    placeholder: '输入您的问题...（支持中英文）',
+    typing: '正在检索分析...',
+    compareTyping: '正在对比分析...',
+    files: '文件管理',
+    fileCount: '个文件',
+    dropText: '拖拽PDF文件到此处，或点击选择',
+    dropHint: '支持同时上传多个PDF文件',
+    uploading: '⏳ 正在上传和处理...',
+    uploadBtn: '📤 上传文件',
+    reloadBtn: '🔄 重载知识库',
+    compareBtn: '🔍 对比分析',
+    compareOn: '🔍 对比模式 ON',
+    comparePlaceholder: '输入问题，对比RAG vs 纯LLM...',
+    shortcutsTitle: '📋 10道评测问题（点击提问）：',
+    uploadedFiles: '已上传文件：',
+    pendingFiles: '待上传文件：',
+  },
+  en: {
+    title: 'Prospectus Q&A',
+    desc: 'Wuhan Xingtuchuan Prospectus · RAG Q&A System',
+    badge: 'jieba Tokenizer + Milvus + Query Understanding',
+    welcome: 'Ask your question',
+    welcomeDesc: 'AI-powered prospectus Q&A with voice input. Supports both Chinese and English — the system replies in your language.',
+    placeholder: 'Type your question... (Chinese or English)',
+    typing: 'Searching and analyzing...',
+    compareTyping: 'Comparing and analyzing...',
+    files: 'File Manager',
+    fileCount: 'files',
+    dropText: 'Drag PDF files here, or click to select',
+    dropHint: 'Supports multiple PDF uploads',
+    uploading: '⏳ Uploading and processing...',
+    uploadBtn: '📤 Upload Files',
+    reloadBtn: '🔄 Reload Knowledge Base',
+    compareBtn: '🔍 Compare Analysis',
+    compareOn: '🔍 Compare ON',
+    comparePlaceholder: 'Ask a question, compare RAG vs pure LLM...',
+    shortcutsTitle: '📋 10 Evaluation Questions (click to ask):',
+    uploadedFiles: 'Uploaded files:',
+    pendingFiles: 'Pending files:',
+  }
+};
+
+function toggleLang() {
+  currentLang = currentLang === 'zh' ? 'en' : 'zh';
+  const t = I18N[currentLang];
+  const btn = document.getElementById('langBtn');
+  btn.textContent = currentLang === 'zh' ? 'EN' : '中文';
+  document.getElementById('headerTitle').textContent = t.title;
+  document.getElementById('headerDesc').textContent = t.desc;
+  document.getElementById('headerBadge').textContent = t.badge;
+  document.getElementById('welcomeTitle').textContent = t.welcome;
+  document.getElementById('welcomeDesc').textContent = t.welcomeDesc;
+  document.getElementById('question').placeholder = t.placeholder;
+  document.getElementById('typingLabel').textContent = t.typing;
+  document.querySelector('.upload-toggle .text').textContent = t.files;
+  document.querySelector('.drop-text').textContent = t.dropText;
+  document.querySelector('.drop-hint').textContent = t.dropHint;
+  document.getElementById('uploadProgress').textContent = t.uploading;
+  document.getElementById('uploadBtn').textContent = t.uploadBtn;
+  document.querySelector('.upload-btn.secondary').textContent = t.reloadBtn;
+  document.getElementById('compareBtn').textContent = compareMode ? t.compareOn : t.compareBtn;
+  document.getElementById('shortcutsTitle').textContent = t.shortcutsTitle;
+  // 切换示例问题语言
+  document.querySelectorAll('.shortcut-tag').forEach(function(el) {
+    el.textContent = el.getAttribute('data-' + currentLang) || el.textContent;
+  });
+  // 更新文件数量显示
+  var countEl = document.getElementById('fileCount');
+  var num = countEl.textContent.replace(/[^0-9]/g, '');
+  countEl.textContent = num + ' ' + t.fileCount;
+}
+
+// ========== Upload Panel Toggle ==========
+function toggleUploadPanel(){
+  const toggle = document.getElementById('uploadToggle');
+  const panel = document.getElementById('uploadPanel');
+  toggle.classList.toggle('open');
+  panel.classList.toggle('show');
+  // 首次展开时加载已有文件列表
+  if (panel.classList.contains('show')) loadFileList();
+}
+
+// ========== Drag & Drop ==========
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('click', function(){ fileInput.click(); }); // 点击触发选择
+dropZone.addEventListener('dragover', function(e){ e.preventDefault(); this.classList.add('drag-over'); }); // 拖拽悬停
+dropZone.addEventListener('dragleave', function(e){ e.preventDefault(); this.classList.remove('drag-over'); }); // 拖拽离开
+dropZone.addEventListener('drop', function(e){ // 拖拽放下
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  addPendingFiles(e.dataTransfer.files); // 添加拖拽的文件
+});
+
+// ========== File Select ==========
+function handleFileSelect(e){
+  addPendingFiles(e.target.files); // 添加选择的文件
+  e.target.value = ''; // 清空input允许重复选择相同文件
+}
+
+// ========== Add Pending Files ==========
+function addPendingFiles(files){
+  for (let i = 0; i < files.length; i++){ // 遍历选中的文件
+    const f = files[i];
+    if (!f.name.toLowerCase().endsWith('.pdf')) continue; // 跳过非PDF文件
+    // 检查是否已存在同名文件
+    const exists = pendingFiles.some(function(pf){ return pf.name === f.name; });
+    if (!exists) pendingFiles.push(f); // 未重复则添加
+  }
+  renderPendingFiles(); // 刷新待上传列表
+  document.getElementById('uploadBtn').disabled = pendingFiles.length === 0; // 按钮状态
+}
+
+// ========== Render Pending Files ==========
+function renderPendingFiles(){
+  const list = document.getElementById('fileList');
+  let html = '';
+  pendingFiles.forEach(function(f, idx){
+    const size = f.size < 1024 ? f.size + 'B' : (f.size < 1048576 ? (f.size/1024).toFixed(1) + 'KB' : (f.size/1048576).toFixed(1) + 'MB');
+    html += '<div class="file-item">' +
+      '<span class="file-icon">📄</span>' +
+      '<span class="file-name">' + escHtml(f.name) + '</span>' +
+      '<span class="file-size">' + size + '</span>' +
+      '<button class="file-remove" onclick="removePendingFile(' + idx + ')">✕</button>' +
+    '</div>';
+  });
+  list.innerHTML = html;
+}
+
+// ========== Remove Pending File ==========
+function removePendingFile(idx){
+  pendingFiles.splice(idx, 1); // 从列表中移除
+  renderPendingFiles(); // 刷新显示
+  document.getElementById('uploadBtn').disabled = pendingFiles.length === 0; // 更新按钮状态
+}
+
+// ========== Upload Files ==========
+async function uploadFiles(){
+  if (pendingFiles.length === 0) return; // 无文件时返回
+  const uploadBtn = document.getElementById('uploadBtn'); // 上传按钮
+  const progress = document.getElementById('uploadProgress'); // 进度提示
+  uploadBtn.disabled = true; // 禁用按钮
+  progress.classList.add('show'); // 显示进度
+  progress.textContent = '⏳ 正在上传 ' + pendingFiles.length + ' 个文件并处理...'; // 更新进度文本
+
+  const formData = new FormData(); // 创建表单数据
+  pendingFiles.forEach(function(f){ formData.append('files', f); }); // 添加所有文件
+
+  try {
+    const resp = await fetch('/api/upload', { method: 'POST', body: formData }); // 发送上传请求
+    const data = await resp.json(); // 解析响应
+    if (data.success) { // 上传成功
+      let msg = '✅ 上传完成！'; // 成功提示
+      data.results.forEach(function(r){ // 遍历处理结果
+        msg += '\n📄 ' + r.filename + ': ' + r.message; // 每个文件的结果
+      });
+      addBotMsg({ answer: msg, sources: [] }); // 在聊天区显示结果
+      pendingFiles = []; // 清空待上传列表
+      renderPendingFiles(); // 刷新列表
+      loadFileList(); // 重新加载已有文件列表
+    } else { // 上传失败
+      addErrorMsg('上传失败: ' + (data.error || '未知错误')); // 显示错误
+    }
+  } catch(e) { // 网络异常
+    addErrorMsg('上传请求失败: ' + e.message); // 显示错误
+  }
+
+  progress.classList.remove('show'); // 隐藏进度
+  uploadBtn.disabled = pendingFiles.length === 0; // 恢复按钮状态
+}
+
+// ========== Load File List ==========
+async function loadFileList(){
+  try {
+    const resp = await fetch('/api/files'); // 请求文件列表
+    const data = await resp.json(); // 解析响应
+    const countEl = document.getElementById('fileCount'); // 文件计数元素
+    countEl.textContent = data.total + ' 个文件'; // 更新计数
+    // 渲染已有文件列表（在pending列表下方）
+    const list = document.getElementById('fileList');
+    let existHtml = '';
+    if (data.files && data.files.length > 0) { // 有已上传文件时
+      existHtml += '<div style="font-size:11px;color:#666;margin:8px 0 4px">已上传文件：</div>';
+      data.files.forEach(function(f){
+        const size = f.size < 1024 ? f.size + 'B' : (f.size < 1048576 ? (f.size/1024).toFixed(1) + 'KB' : (f.size/1048576).toFixed(1) + 'MB');
+        existHtml += '<div class="file-item">' +
+          '<span class="file-icon">📄</span>' +
+          '<span class="file-name">' + escHtml(f.filename) + '</span>' +
+          '<span class="file-size">' + size + '</span>' +
+          '<span class="file-status success">已上传</span>' +
+          '<button class="file-remove" onclick="deleteFile(\'' + escHtml(f.filename) + '\')">✕</button>' +
+        '</div>';
+      });
+    }
+    // 追加到现有pending列表后面
+    const pendingHtml = list.innerHTML; // 保留pending文件的HTML
+    if (pendingHtml && existHtml) { // 两者都有时拼接
+      list.innerHTML = existHtml + '<div style="font-size:11px;color:#666;margin:8px 0 4px">待上传文件：</div>' + pendingHtml;
+    } else if (existHtml) { // 只有已上传文件
+      list.innerHTML = existHtml;
+    }
+  } catch(e) { /* 静默失败 */ }
+}
+
+// ========== Delete File ==========
+async function deleteFile(filename){
+  if (!confirm('确定删除文件 ' + filename + '？')) return; // 确认删除
+  try {
+    const resp = await fetch('/api/files/' + encodeURIComponent(filename), { method: 'DELETE' }); // 发送删除请求
+    const data = await resp.json(); // 解析响应
+    if (data.success) { // 删除成功
+      addBotMsg({ answer: '🗑️ 文件 ' + filename + ' 已删除', sources: [] }); // 显示提示
+      loadFileList(); // 刷新文件列表
+    }
+  } catch(e) { // 网络异常
+    addErrorMsg('删除失败: ' + e.message); // 显示错误
+  }
+}
+
+// ========== Reload Knowledge ==========
+async function reloadKnowledge(){
+  try {
+    const resp = await fetch('/api/reload', { method: 'POST' }); // 发送重载请求
+    const data = await resp.json(); // 解析响应
+    if (data.success) { // 重载成功
+      addBotMsg({ answer: '🔄 ' + data.message, sources: [] }); // 显示提示
+    }
+  } catch(e) { // 网络异常
+    addErrorMsg('重载失败: ' + e.message); // 显示错误
+  }
+}
+
+// ========== Compare Mode Toggle ==========
+function toggleCompareMode(){
+  compareMode = !compareMode;
+  const btn = document.getElementById('compareBtn');
+  const inp = document.getElementById('question');
+  if (compareMode) {
+    btn.classList.add('active');
+    btn.textContent = '🔍 对比模式 ON';
+    inp.placeholder = '输入问题，对比RAG vs 纯LLM...';
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = '🔍 对比分析';
+    inp.placeholder = '输入您的问题...';
+  }
+  inp.focus();
+}
+
+// ========== Compare Send ==========
+async function compareSend(){
+  const q = questionInput.value.trim();
+  if (!q || isProcessing) return;
+
+  isProcessing = true;
+  sendBtn.disabled = true;
+
+  addUserMsg(q);
+  questionInput.value = '';
+  questionInput.style.height = 'auto';
+  typing.querySelector('.typing-label').textContent = '正在对比分析...';
+  typing.classList.add('show');
+  scrollToBottom();
+
+  try {
+    const resp = await fetch('/api/compare', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q, top_k: 5, lang: currentLang })
+    });
+    typing.classList.remove('show');
+    if (!resp.ok){
+      addErrorMsg('对比接口错误 (' + resp.status + ')');
+      isProcessing = false;
+      sendBtn.disabled = false;
+      return;
+    }
+    const data = await resp.json();
+    addCompareMsg(data);
+    scrollToBottom();
+  } catch(e){
+    typing.classList.remove('show');
+    addErrorMsg('对比请求失败: ' + e.message);
+    scrollToBottom();
+  }
+
+  isProcessing = false;
+  sendBtn.disabled = false;
+  questionInput.focus();
+}
+
+// ========== Add Compare Message ==========
+function addCompareMsg(data){
+  welcome.style.display = 'none';
+  const div = document.createElement('div');
+  div.className = 'msg msg-bot';
+  const t = new Date().toLocaleTimeString();
+
+  let srcCount = data.rag && data.rag.sources ? data.rag.sources.length : 0;
+  let hasCtx = data.rag && data.rag.has_context;
+  let ragTime = data.rag ? data.rag.time_seconds.toFixed(2) : '-';
+  let llmTime = data.llm_only ? data.llm_only.time_seconds.toFixed(2) : '-';
+  let match = data.analysis ? data.analysis.answers_match : false;
+  let ragLen = data.analysis ? data.analysis.rag_len : 0;
+  let llmLen = data.analysis ? data.analysis.llm_len : 0;
+
+  let analysis = '';
+  if (data.analysis) {
+    const items = [];
+    if (data.analysis.rag_has_sources) items.push({ text: '📄 有PDF来源', cls: 'win' });
+    else items.push({ text: '📄 无PDF来源', cls: 'lose' });
+    if (data.analysis.rag_is_more_detailed) items.push({ text: '📏 RAG更详细', cls: 'win' });
+    else if (Math.abs(ragLen - llmLen) < 10) items.push({ text: '📏 长度相近', cls: 'tie' });
+    else items.push({ text: '📏 LLM更详细', cls: 'lose' });
+    if (data.analysis.rag_is_faster) items.push({ text: '⚡ RAG更快', cls: 'win' });
+    else items.push({ text: '⚡ LLM更快', cls: 'lose' });
+    if (data.rag && data.rag.gt_matched) items.push({ text: '⭐ 命中标准答案', cls: 'win' });
+    items.forEach(function(it){ analysis += '<span class="analysis-item ' + it.cls + '">' + it.text + '</span>'; });
+  }
+
+  let ragAnswer = data.rag ? escHtml(data.rag.answer || '（无回答）') : '（无数据）';
+  let llmAnswer = data.llm_only ? escHtml(data.llm_only.answer || '（无回答）') : '（无数据）';
+  let ragSrcInfo = srcCount > 0 ? '<div class="compare-source-count">📎 ' + srcCount + '个参考来源</div>' : '<div class="compare-source-count" style="color:#555">⚠ 未检索到PDF来源</div>';
+
+  let html = '<div class="compare-card">' +
+    '<div class="compare-col rag">' +
+      '<div class="compare-label"><span class="tag rag-tag">RAG</span>基于PDF检索' + (data.rag && data.rag.gt_matched ? ' <span class="tag hit-check">✓ 标准答案</span>' : '') + '</div>' +
+      '<div class="compare-answer">' + ragAnswer + '</div>' +
+      '<div style="font-size:11px;color:#555;margin-top:4px">⏱ ' + ragTime + 's' + (data.rag && data.rag.intent ? ' | 意图: ' + escHtml(data.rag.intent) : '') + '</div>' +
+      ragSrcInfo +
+    '</div>' +
+    '<div class="compare-col llm">' +
+      '<div class="compare-label"><span class="tag llm-tag">LLM</span>纯大模型（无上下文）' + (data.llm_only && data.llm_only.has_api === false ? ' <span style="color:#ff6b6b;font-size:10px">(API不可用)</span>' : '') + '</div>' +
+      '<div class="compare-answer">' + (data.llm_only && data.llm_only.has_api === false ? '<span class="no-ctx">' + llmAnswer + '</span>' : llmAnswer) + '</div>' +
+      '<div style="font-size:11px;color:#555;margin-top:4px">⏱ ' + llmTime + 's</div>' +
+    '</div>' +
+    (analysis ? '<div class="analysis-bar">' + analysis + '</div>' : '') +
+  '</div>';
+
+  div.innerHTML = '<div class="msg-bubble">' +
+    '<div style="font-size:11px;color:#ffc864;font-weight:600;margin-bottom:6px;letter-spacing:1px">🔍 对比分析结果</div>' +
+    html +
+    '</div><div class="msg-time">' + t + '</div>';
+
+  chatArea.insertBefore(div, typing);
+  scrollToBottom();
+  return div;
+}
+
+// ========== DOM ==========
+const chatArea = document.getElementById('chatArea');
+const questionInput = document.getElementById('question');
+const sendBtn = document.getElementById('sendBtn');
+const voiceBtn = document.getElementById('voiceBtn');
+const typing = document.getElementById('typing');
+const welcome = document.getElementById('welcome');
+const anchor = document.getElementById('scrollAnchor');
+
+// ========== Auto-resize ==========
+questionInput.addEventListener('input', function(){
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+
+// ========== Enter to Send ==========
+questionInput.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); compareMode ? compareSend() : send(); }
+});
+
+// ========== Scroll helpers ==========
+function scrollToBottom(){ anchor.scrollIntoView({ behavior: 'smooth' }); }
+
+// ========== Create Message ==========
+function addMsg(role, html, timeText){
+  welcome.style.display = 'none';
+  const div = document.createElement('div');
+  div.className = 'msg msg-' + role;
+  div.innerHTML = '<div class="msg-bubble">' + html + '</div>' +
+    '<div class="msg-time">' + (timeText || new Date().toLocaleTimeString()) + '</div>';
+  chatArea.insertBefore(div, typing);
+  scrollToBottom();
+  return div;
+}
+
+function addUserMsg(text){
+  return addMsg('user', '<div class="answer-text">' + escHtml(text) + '</div>');
+}
+
+function addBotMsg(data){
+  let html = '<div class="answer-text">' + escHtml(data.answer || '（无回答）') + '</div>';
+
+  // Meta tags
+  let meta = '';
+  if (data.gt_matched) meta += '<span class="meta-tag hit">✓ 命中标准答案</span>';
+  if (data.intent) meta += '<span class="meta-tag intent">' + escHtml(data.intent) + '</span>';
+  if (data.time_seconds) meta += '<span class="meta-tag">' + data.time_seconds.toFixed(2) + 's</span>';
+  if (data.backend) meta += '<span class="meta-tag">' + escHtml(data.backend) + '</span>';
+  if (meta) html += '<div class="answer-meta">' + meta + '</div>';
+
+  // Sources toggle
+  if (data.sources && data.sources.length > 0){
+    const sid = 'src_' + Date.now() + '_' + Math.random().toString(36).slice(2,6);
+    html += '<span class="sources-toggle" onclick="toggleSources(\'' + sid + '\')">📎 ' + data.sources.length + '个参考来源 ▾</span>';
+    html += '<div class="sources-content" id="' + sid + '">';
+    data.sources.forEach(function(s){
+      let snip = escHtml((s.snippet || '').substring(0, 240));
+      html += '<div class="source-item">' +
+        '<span class="page">第' + (s.page || '?') + '页</span> ' +
+        '<span class="score">相关度: ' + (s.score ? s.score.toFixed(4) : 'N/A') + '</span><br>' + snip +
+        '</div>';
+    });
+    html += '</div>';
+  } else {
+    html += '<div style="font-size:12px;color:#555;margin-top:6px">无检索来源</div>';
+  }
+
+  return addMsg('bot', html);
+}
+
+function addErrorMsg(msg){
+  addMsg('bot', '<div class="error-bubble">⚠ ' + escHtml(msg) + '</div>');
+}
+
+// ========== Toggle Sources ==========
+function toggleSources(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.toggle('open');
+}
+
+// ========== Escape ==========
+function escHtml(s){
+  if (typeof s !== 'string') s = String(s || '');
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ========== Send ==========
+async function send(){
+  if (compareMode) { compareSend(); return; }
+  const q = questionInput.value.trim();
+  if (!q || isProcessing) return;
+
+  isProcessing = true;
+  sendBtn.disabled = true;
+
+  addUserMsg(q);
+  questionInput.value = '';
+  questionInput.style.height = 'auto';
+  typing.classList.add('show');
+  scrollToBottom();
+
+  try {
+    const resp = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q, top_k: 5, lang: currentLang })
+    });
+    typing.classList.remove('show');
+    if (!resp.ok){
+      const errText = await resp.text().catch(function(){ return ''; });
+      addErrorMsg('服务器错误 (' + resp.status + ')' + (errText ? ': ' + errText.slice(0,150) : ''));
+      scrollToBottom();
+      isProcessing = false;
+      sendBtn.disabled = false;
+      return;
+    }
+    const data = await resp.json();
+    addBotMsg(data);
+    scrollToBottom();
+  } catch(e){
+    typing.classList.remove('show');
+    addErrorMsg('网络请求失败: ' + e.message);
+    scrollToBottom();
+  }
+
+  isProcessing = false;
+  sendBtn.disabled = false;
+  questionInput.focus();
+}
+
+// ========== Quick Ask ==========
+function quickAsk(el){
+  questionInput.value = el.getAttribute('data-' + currentLang) || el.textContent;
+  if (compareMode) { compareSend(); return; }
+  send();
+}
+
+// ========== Voice Input ==========
+function toggleVoice(){
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+    addErrorMsg('当前浏览器不支持语音识别。请使用 Chrome 浏览器。');
+    return;
+  }
+  if (recognition && voiceBtn.classList.contains('listening')){
+    recognition.stop();
+    return;
+  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SpeechRecognition();
+  recognition.lang = 'zh-CN';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  voiceBtn.classList.add('listening');
+  voiceBtn.textContent = '🔴';
+  voiceBtn.title = '点击停止录音';
+
+  let finalText = '';
+
+  recognition.onresult = function(e){
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++){
+      const result = e.results[i];
+      if (result.isFinal){ finalText += result[0].transcript; }
+      else { interim += result[0].transcript; }
+    }
+    questionInput.value = finalText + interim;
+    questionInput.style.height = 'auto';
+    questionInput.style.height = Math.min(questionInput.scrollHeight, 120) + 'px';
+  };
+
+  recognition.onend = function(){
+    voiceBtn.classList.remove('listening');
+    voiceBtn.textContent = '🎤';
+    voiceBtn.title = '语音输入';
+    if (questionInput.value.trim()){
+      send();
+    }
+  };
+
+  recognition.onerror = function(e){
+    voiceBtn.classList.remove('listening');
+    voiceBtn.textContent = '🎤';
+    voiceBtn.title = '语音输入';
+    if (e.error === 'no-speech') { /* silent */ }
+    else { addErrorMsg('语音识别错误: ' + e.error); }
+  };
+
+  questionInput.value = '';
+  recognition.start();
+}
+</script>
+</body>
+</html>
