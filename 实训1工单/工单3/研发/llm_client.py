@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)  # 获取当前模块的日志记录器
 
 # ============ DeepSeek API配置 ============
 # 已更新为提供的 API Key
-DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', 'sk-23559ae02add4e1bb1c8bf9d3777bebf')  # 从环境变量获取API密钥，无则用默认值（已配置真实密钥）
+DEEPSEEK_API_KEY = os.environ.get('DEEPSEEK_API_KEY', 'sk-235....bebf')  # 从环境变量获取API密钥，无则用默认值（已配置真实密钥）
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"  # DeepSeek API的基础URL
 DEEPSEEK_HAS_API = bool(DEEPSEEK_API_KEY) and DEEPSEEK_API_KEY != ''  # 判断API密钥是否有效
 
