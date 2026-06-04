@@ -1,0 +1,613 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RAG工单11 思维导图</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f8fafc;
+    --fg: #172033;
+    --muted: #5b6475;
+    --line: #64748b;
+    --neutral: #e2e8f0;
+    --input: #bfdbfe;
+    --process: #c7d2fe;
+    --storage: #99f6e4;
+    --external: #fde68a;
+    --risk: #fecaca;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f172a;
+      --fg: #e5e7eb;
+      --muted: #a3adbd;
+      --line: #94a3b8;
+      --neutral: #334155;
+      --input: #1d4ed8;
+      --process: #4338ca;
+      --storage: #0f766e;
+      --external: #92400e;
+      --risk: #991b1b;
+    }
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  main {
+    max-width: 1600px;
+    margin: 40px auto;
+    padding: 0 24px;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .title { font-size: 26px; font-weight: 700; fill: var(--fg); }
+  .label { font-size: 16px; font-weight: 600; fill: var(--fg); }
+  .sublabel { font-size: 14px; fill: var(--fg); }
+  .small { font-size: 12px; fill: var(--muted); }
+  .node { stroke: var(--line); stroke-width: 1.5; rx: 8; ry: 8; }
+  .root-box { fill: #b91c1c; stroke: #991b1b; stroke-width: 2.5; rx: 12; ry: 12; }
+  .root-text { fill: #ffffff; font-weight: 700; font-size: 22px; }
+  .neutral-box { fill: var(--neutral); }
+  .input-box { fill: var(--input); }
+  .process-box { fill: var(--process); }
+  .storage-box { fill: var(--storage); }
+  .external-box { fill: var(--external); }
+  .risk-box { fill: var(--risk); }
+  .peak-badge { fill: #fefce8; stroke: #eab308; stroke-width: 1.5; rx: 4; ry: 4; }
+  .peak-text { fill: #a16207; font-size: 11px; font-weight: 700; }
+  .edge { stroke: var(--line); stroke-width: 2; fill: none; }
+  .edge-thin { stroke: var(--line); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+  .edge-thick { stroke: #b91c1c; stroke-width: 2.5; fill: none; }
+  .up { fill: #166534; font-weight: 700; }
+  .flat { fill: var(--muted); }
+</style>
+<main>
+<svg viewBox="0 0 1500 2400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line)"/>
+    </marker>
+  </defs>
+
+  <!-- ============================ 根节点 ============================ -->
+  <rect x="380" y="20" width="660" height="56" class="root-box"/>
+  <text x="710" y="55" text-anchor="middle" class="root-text">🦞 RAG工单11 — Embedding模型微调</text>
+  <rect x="980" y="6" width="50" height="22" class="peak-badge"/>
+  <text x="1005" y="22" text-anchor="middle" class="peak-text">ML</text>
+
+  <path d="M 500 76 L 500 120 L 90 120 L 90 160" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 550 76 L 550 120 L 270 120 L 270 160" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 600 76 L 600 120 L 460 120 L 460 160" class="edge-thick" marker-end="url(#arrow)"/>
+  <path d="M 650 76 L 650 120 L 640 120 L 640 160" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 700 76 L 700 120 L 830 120 L 830 160" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 750 76 L 750 120 L 1040 120 L 1040 160" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 800 76 L 800 120 L 1200 120 L 1200 160" class="edge" marker-end="url(#arrow)"/>
+
+  <!-- ================================================================ -->
+  <!-- 1. 项目背景 -->
+  <!-- ================================================================ -->
+  <rect x="10" y="160" width="200" height="42" class="node input-box"/>
+  <text x="110" y="187" text-anchor="middle" class="label">🎯 项目背景</text>
+
+  <path d="M 70 202 L 70 226" class="edge" marker-end="url(#arrow)"/>
+  <rect x="0" y="228" width="230" height="34" class="node neutral-box"/>
+  <text x="115" y="250" text-anchor="middle" class="sublabel">通用Embedding"语义鸿沟"</text>
+
+  <path d="M 80 262 L 80 286" class="edge" marker-end="url(#arrow)"/>
+  <rect x="0" y="288" width="230" height="34" class="node neutral-box"/>
+  <text x="115" y="310" text-anchor="middle" class="sublabel">专业术语理解偏差</text>
+
+  <path d="M 90 322 L 90 346" class="edge" marker-end="url(#arrow)"/>
+  <rect x="0" y="348" width="230" height="34" class="node neutral-box"/>
+  <text x="115" y="370" text-anchor="middle" class="sublabel">内部缩写/代号无法识别</text>
+
+  <path d="M 100 382 L 100 406" class="edge" marker-end="url(#arrow)"/>
+  <rect x="0" y="408" width="230" height="34" class="node neutral-box"/>
+  <text x="115" y="430" text-anchor="middle" class="sublabel">同义词映射不准</text>
+
+  <path d="M 95 442 L 95 466" class="edge" marker-end="url(#arrow)"/>
+  <rect x="0" y="468" width="230" height="40" class="node risk-box"/>
+  <text x="115" y="490" text-anchor="middle" class="sublabel">微调前 Recall@1 仅 46.67%</text>
+  <text x="115" y="504" text-anchor="middle" class="small">不到一半首条命中</text>
+
+  <!-- ================================================================ -->
+  <!-- 2. 流水线总览 -->
+  <!-- ================================================================ -->
+  <rect x="180" y="160" width="200" height="42" class="node process-box"/>
+  <text x="280" y="187" text-anchor="middle" class="label">🔬 微调流水线</text>
+
+  <path d="M 240 202 L 240 226" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="228" width="220" height="44" class="node input-box"/>
+  <text x="285" y="248" text-anchor="middle" class="sublabel">Step 1: 数据准备</text>
+  <text x="285" y="266" text-anchor="middle" class="small">PDF解析→LLM生成三元组</text>
+
+  <path d="M 250 272 L 250 296" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="298" width="220" height="44" class="node process-box"/>
+  <text x="285" y="318" text-anchor="middle" class="sublabel">Step 2: 模型微调</text>
+  <text x="285" y="336" text-anchor="middle" class="small">bge-base + TripletLoss</text>
+
+  <path d="M 255 342 L 255 366" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="368" width="220" height="44" class="node storage-box"/>
+  <text x="285" y="388" text-anchor="middle" class="sublabel">Step 3: 评估对比</text>
+  <text x="285" y="406" text-anchor="middle" class="small">22项指标 / 随机采样30条</text>
+
+  <!-- ================================================================ -->
+  <!-- 3. Step 1: 数据准备 (核心) -->
+  <!-- ================================================================ -->
+  <rect x="370" y="160" width="200" height="42" class="node input-box"/>
+  <text x="470" y="187" text-anchor="middle" class="label">📊 数据准备</text>
+
+  <path d="M 430 202 L 430 226" class="edge" marker-end="url(#arrow)"/>
+  <rect x="360" y="228" width="230" height="44" class="node neutral-box"/>
+  <text x="475" y="248" text-anchor="middle" class="sublabel">PDF解析 (548页)</text>
+  <text x="475" y="266" text-anchor="middle" class="small">招股说明书1 → 1,144个chunk</text>
+
+  <path d="M 445 272 L 445 296" class="edge" marker-end="url(#arrow)"/>
+  <rect x="360" y="298" width="230" height="44" class="node external-box"/>
+  <text x="475" y="318" text-anchor="middle" class="sublabel">LLM生成三元组</text>
+  <text x="475" y="336" text-anchor="middle" class="small">DeepSeek API → query+pos+neg</text>
+
+  <path d="M 450 342 L 450 366" class="edge" marker-end="url(#arrow)"/>
+  <rect x="360" y="368" width="230" height="44" class="node process-box"/>
+  <text x="475" y="388" text-anchor="middle" class="sublabel">Hard Negative策略</text>
+  <text x="475" y="406" text-anchor="middle" class="small">LLM从邻近chunk挑最难的</text>
+
+  <path d="M 455 412 L 455 436" class="edge" marker-end="url(#arrow)"/>
+  <rect x="360" y="438" width="230" height="44" class="node storage-box"/>
+  <text x="475" y="458" text-anchor="middle" class="sublabel">输出数据集</text>
+  <text x="475" y="476" text-anchor="middle" class="small">200条训练 + 30条评估 (随机)</text>
+
+  <!-- ================================================================ -->
+  <!-- 4. Step 2: 模型微调 -->
+  <!-- ================================================================ -->
+  <rect x="550" y="160" width="200" height="42" class="node process-box"/>
+  <text x="650" y="187" text-anchor="middle" class="label">⚙️ 模型微调</text>
+
+  <path d="M 610 202 L 610 226" class="edge" marker-end="url(#arrow)"/>
+  <rect x="535" y="228" width="240" height="44" class="node neutral-box"/>
+  <text x="655" y="248" text-anchor="middle" class="sublabel">bge-base-zh-v1.5</text>
+  <text x="655" y="266" text-anchor="middle" class="small">BERT-base / 1.1亿参数 / 768维</text>
+
+  <path d="M 620 272 L 620 296" class="edge" marker-end="url(#arrow)"/>
+  <rect x="535" y="298" width="240" height="44" class="node process-box"/>
+  <text x="655" y="318" text-anchor="middle" class="sublabel">TripletLoss</text>
+  <text x="655" y="336" text-anchor="middle" class="small">拉近正例 / 推远负例</text>
+
+  <path d="M 625 342 L 625 366" class="edge" marker-end="url(#arrow)"/>
+  <rect x="535" y="368" width="240" height="44" class="node neutral-box"/>
+  <text x="655" y="388" text-anchor="middle" class="sublabel">训练参数</text>
+  <text x="655" y="406" text-anchor="middle" class="small">Epochs=2 / Batch=1 / lr=2e-5</text>
+
+  <path d="M 630 412 L 630 436" class="edge" marker-end="url(#arrow)"/>
+  <rect x="535" y="438" width="240" height="44" class="node storage-box"/>
+  <text x="655" y="458" text-anchor="middle" class="sublabel">训练结果</text>
+  <text x="655" y="476" text-anchor="middle" class="small">~3分钟 / Loss 0.45→0.31</text>
+
+  <path d="M 635 482 L 635 506" class="edge" marker-end="url(#arrow)"/>
+  <rect x="535" y="508" width="240" height="44" class="node storage-box"/>
+  <text x="655" y="528" text-anchor="middle" class="sublabel">输出模型</text>
+  <text x="655" y="546" text-anchor="middle" class="small">~390MB / 768维</text>
+
+  <!-- ================================================================ -->
+  <!-- 5. Step 3: 评估对比 (亮点) -->
+  <!-- ================================================================ -->
+  <rect x="740" y="160" width="200" height="42" class="node storage-box"/>
+  <text x="840" y="187" text-anchor="middle" class="label">📈 评估对比</text>
+
+  <path d="M 800 202 L 800 226" class="edge" marker-end="url(#arrow)"/>
+  <rect x="730" y="228" width="240" height="34" class="node input-box"/>
+  <text x="850" y="250" text-anchor="middle" class="sublabel">✅ 随机采样30条query</text>
+
+  <path d="M 810 262 L 810 286" class="edge" marker-end="url(#arrow)"/>
+  <rect x="730" y="288" width="240" height="34" class="node neutral-box"/>
+  <text x="850" y="310" text-anchor="middle" class="sublabel">语料库: 1,139条chunk</text>
+
+  <path d="M 815 322 L 815 346" class="edge" marker-end="url(#arrow)"/>
+  <rect x="730" y="348" width="240" height="34" class="node input-box"/>
+  <text x="850" y="370" text-anchor="middle" class="sublabel">22项评估指标</text>
+
+  <path d="M 820 382 L 820 406" class="edge" marker-end="url(#arrow)"/>
+  <rect x="730" y="408" width="240" height="60" class="node risk-box"/>
+  <text x="850" y="428" text-anchor="middle" class="up">Recall@1: 46.67% → 60.00%</text>
+  <text x="850" y="448" text-anchor="middle" class="up">MRR: 0.636 → 0.717</text>
+  <text x="850" y="464" text-anchor="middle" class="up">NDCG@3: 0.652 → 0.738</text>
+
+  <!-- ================================================================ -->
+  <!-- 6. 文件结构 -->
+  <!-- ================================================================ -->
+  <rect x="950" y="160" width="220" height="42" class="node neutral-box"/>
+  <text x="1060" y="187" text-anchor="middle" class="label">📁 项目文件结构</text>
+
+  <path d="M 1020 202 L 1020 226" class="edge" marker-end="url(#arrow)"/>
+  <rect x="940" y="228" width="240" height="34" class="node input-box"/>
+  <text x="1060" y="250" text-anchor="middle" class="sublabel">finetune/prepare_data.py</text>
+
+  <path d="M 1030 262 L 1030 286" class="edge" marker-end="url(#arrow)"/>
+  <rect x="940" y="288" width="240" height="34" class="node process-box"/>
+  <text x="1060" y="310" text-anchor="middle" class="sublabel">finetune/train_embedding.py</text>
+
+  <path d="M 1040 322 L 1040 346" class="edge" marker-end="url(#arrow)"/>
+  <rect x="940" y="348" width="240" height="34" class="node storage-box"/>
+  <text x="1060" y="370" text-anchor="middle" class="sublabel">finetune/evaluate.py</text>
+
+  <path d="M 1035 382 L 1035 406" class="edge" marker-end="url(#arrow)"/>
+  <rect x="940" y="408" width="240" height="34" class="node external-box"/>
+  <text x="1060" y="430" text-anchor="middle" class="sublabel">finetune/run_all.py</text>
+
+  <!-- ================================================================ -->
+  <!-- 7. 新增文档 -->
+  <!-- ================================================================ -->
+  <rect x="1110" y="160" width="220" height="42" class="node input-box"/>
+  <text x="1220" y="187" text-anchor="middle" class="label">📝 项目文档</text>
+
+  <path d="M 1180 202 L 1180 226" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1100" y="228" width="240" height="34" class="node neutral-box"/>
+  <text x="1220" y="250" text-anchor="middle" class="sublabel">优化内容总结.md</text>
+
+  <path d="M 1190 262 L 1190 286" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1100" y="288" width="240" height="34" class="node neutral-box"/>
+  <text x="1220" y="310" text-anchor="middle" class="sublabel">微调过程文档.md</text>
+
+  <path d="M 1195 322 L 1195 346" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1100" y="348" width="240" height="34" class="node neutral-box"/>
+  <text x="1220" y="370" text-anchor="middle" class="sublabel">微调指标对比.md</text>
+
+  <path d="M 1200 382 L 1200 406" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1100" y="408" width="240" height="34" class="node neutral-box"/>
+  <text x="1220" y="430" text-anchor="middle" class="sublabel">部署文档.md</text>
+
+  <path d="M 1195 442 L 1195 466" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1100" y="468" width="240" height="34" class="node neutral-box"/>
+  <text x="1220" y="490" text-anchor="middle" class="sublabel">fine_tuning_report.md</text>
+
+  <!-- ================================================================ -->
+  <!-- 图例 -->
+  <!-- ================================================================ -->
+  <rect x="80" y="570" width="200" height="24" class="node process-box"/>
+  <text x="180" y="587" text-anchor="middle" class="small">处理 / 逻辑</text>
+  <rect x="300" y="570" width="200" height="24" class="node storage-box"/>
+  <text x="400" y="587" text-anchor="middle" class="small">存储 / 数据</text>
+  <rect x="520" y="570" width="200" height="24" class="node input-box"/>
+  <text x="620" y="587" text-anchor="middle" class="small">输入 / 微调模块</text>
+  <rect x="740" y="570" width="200" height="24" class="node external-box"/>
+  <text x="840" y="587" text-anchor="middle" class="small">外部 / 文档</text>
+  <rect x="960" y="570" width="120" height="24" class="peak-badge"/>
+  <text x="1020" y="587" text-anchor="middle" class="peak-text">ML 训练</text>
+
+  <!-- ================================================================ -->
+  <!-- 流水线流程图 -->
+  <!-- ================================================================ -->
+  <text x="720" y="660" text-anchor="middle" class="title">🔬 微调流水线全流程</text>
+
+  <rect x="40" y="690" width="250" height="52" class="node input-box"/>
+  <text x="165" y="710" text-anchor="middle" class="label">Step 1: 数据准备</text>
+  <text x="165" y="730" text-anchor="middle" class="small">prepare_data.py</text>
+
+  <path d="M 290 716 L 350 716" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="350" y="690" width="150" height="52" class="node neutral-box"/>
+  <text x="425" y="710" text-anchor="middle" class="sublabel">PDF解析</text>
+  <text x="425" y="728" text-anchor="middle" class="small">548页 → 1,144 chunk</text>
+
+  <path d="M 500 716 L 560 716" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="560" y="690" width="180" height="52" class="node external-box"/>
+  <text x="650" y="710" text-anchor="middle" class="sublabel">LLM生成三元组</text>
+  <text x="650" y="728" text-anchor="middle" class="small">query + pos + hard_neg</text>
+
+  <path d="M 740 716 L 800 716" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="800" y="690" width="200" height="52" class="node storage-box"/>
+  <text x="900" y="710" text-anchor="middle" class="sublabel">三元组数据集</text>
+  <text x="900" y="728" text-anchor="middle" class="small">200条 train + 30条 eval</text>
+
+  <path d="M 1000 716 L 1060 716 L 1060 780 L 660 780 L 660 802" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="260" y="802" width="250" height="52" class="node process-box"/>
+  <text x="385" y="822" text-anchor="middle" class="label">Step 2: 模型微调</text>
+  <text x="385" y="842" text-anchor="middle" class="small">train_embedding.py</text>
+
+  <path d="M 510 828 L 570 828" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="570" y="802" width="180" height="52" class="node neutral-box"/>
+  <text x="660" y="822" text-anchor="middle" class="sublabel">加载bge-base</text>
+  <text x="660" y="840" text-anchor="middle" class="small">1.1亿参数 / 768维</text>
+
+  <path d="M 750 828 L 810 828" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="810" y="802" width="200" height="52" class="node process-box"/>
+  <text x="910" y="822" text-anchor="middle" class="sublabel">TripletLoss微调</text>
+  <text x="910" y="840" text-anchor="middle" class="small">Epoch=2 / lr=2e-5 / ~3分钟</text>
+
+  <path d="M 1010 828 L 1070 828" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="1070" y="802" width="200" height="52" class="node storage-box"/>
+  <text x="1170" y="822" text-anchor="middle" class="sublabel">微调后模型</text>
+  <text x="1170" y="840" text-anchor="middle" class="small">768维 / ~390MB</text>
+
+  <path d="M 1170 854 L 1170 890 L 660 890 L 660 912" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="260" y="912" width="250" height="52" class="node storage-box"/>
+  <text x="385" y="932" text-anchor="middle" class="label">Step 3: 评估对比</text>
+  <text x="385" y="952" text-anchor="middle" class="small">evaluate.py (22项指标)</text>
+
+  <path d="M 510 938 L 570 938" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="570" y="912" width="180" height="52" class="node neutral-box"/>
+  <text x="660" y="932" text-anchor="middle" class="sublabel">编码+搜索</text>
+  <text x="660" y="950" text-anchor="middle" class="small">编码1,139条chunk</text>
+  <text x="660" y="964" text-anchor="middle" class="small">余弦相似度搜索</text>
+
+  <path d="M 750 938 L 810 938" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="810" y="912" width="200" height="52" class="node risk-box"/>
+  <text x="910" y="932" text-anchor="middle" class="sublabel">对比微调前后</text>
+  <text x="910" y="950" text-anchor="middle" class="up">Recall@1: 47%→60%</text>
+  <text x="910" y="964" text-anchor="middle" class="up">MRR: 0.64→0.72</text>
+
+  <path d="M 1010 938 L 1070 938" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="1070" y="912" width="200" height="52" class="node input-box"/>
+  <text x="1170" y="932" text-anchor="middle" class="sublabel">✅ 微调有效</text>
+  <text x="1170" y="950" text-anchor="middle" class="small">Recall@1 +13.33%</text>
+  <text x="1170" y="964" text-anchor="middle" class="small">MRR +8.08%</text>
+
+  <!-- ================================================================ -->
+  <!-- 22项评估结果表 -->
+  <!-- ================================================================ -->
+  <text x="720" y="1040" text-anchor="middle" class="title">🏆 22项评估指标 (来自 evaluation_result.json)</text>
+
+  <rect x="60" y="1070" width="130" height="30" class="node neutral-box"/>
+  <text x="125" y="1090" text-anchor="middle" class="small">类别</text>
+  <rect x="190" y="1070" width="180" height="30" class="node neutral-box"/>
+  <text x="280" y="1090" text-anchor="middle" class="small">指标</text>
+  <rect x="370" y="1070" width="140" height="30" class="node neutral-box"/>
+  <text x="440" y="1090" text-anchor="middle" class="small">微调前</text>
+  <rect x="510" y="1070" width="140" height="30" class="node neutral-box"/>
+  <text x="580" y="1090" text-anchor="middle" class="small">微调后</text>
+  <rect x="650" y="1070" width="100" height="30" class="node neutral-box"/>
+  <text x="700" y="1090" text-anchor="middle" class="small">提升</text>
+  <line x1="60" y1="1100" x2="750" y2="1100" stroke="var(--line)" stroke-width="1.5"/>
+
+  <rect x="60" y="1100" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1116" text-anchor="middle" class="small">召回率</text>
+  <rect x="190" y="1100" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1116" text-anchor="middle" class="small">Recall@1</text>
+  <rect x="370" y="1100" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1116" text-anchor="middle" class="small">46.67%</text>
+  <rect x="510" y="1100" width="140" height="24" class="node risk-box"/>
+  <text x="580" y="1116" text-anchor="middle" class="up">60.00%</text>
+  <rect x="650" y="1100" width="100" height="24" class="node risk-box"/>
+  <text x="700" y="1116" text-anchor="middle" class="up">+13.33%</text>
+
+  <rect x="60" y="1124" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1140" text-anchor="middle" class="small"></text>
+  <rect x="190" y="1124" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1140" text-anchor="middle" class="small">Recall@3</text>
+  <rect x="370" y="1124" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1140" text-anchor="middle" class="small">76.67%</text>
+  <rect x="510" y="1124" width="140" height="24" class="node neutral-box"/>
+  <text x="580" y="1140" text-anchor="middle" class="small">83.33%</text>
+  <rect x="650" y="1124" width="100" height="24" class="node neutral-box"/>
+  <text x="700" y="1140" text-anchor="middle" class="small">+6.67%</text>
+
+  <rect x="60" y="1148" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1164" text-anchor="middle" class="small"></text>
+  <rect x="190" y="1148" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1164" text-anchor="middle" class="small">Recall@5</text>
+  <rect x="370" y="1148" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1164" text-anchor="middle" class="small">80.00%</text>
+  <rect x="510" y="1148" width="140" height="24" class="node neutral-box"/>
+  <text x="580" y="1164" text-anchor="middle" class="small">83.33%</text>
+  <rect x="650" y="1148" width="100" height="24" class="node neutral-box"/>
+  <text x="700" y="1164" text-anchor="middle" class="small">+3.33%</text>
+
+  <rect x="60" y="1172" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1188" text-anchor="middle" class="small"></text>
+  <rect x="190" y="1172" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1188" text-anchor="middle" class="small">Recall@10</text>
+  <rect x="370" y="1172" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1188" text-anchor="middle" class="small">90.00%</text>
+  <rect x="510" y="1172" width="140" height="24" class="node neutral-box"/>
+  <text x="580" y="1188" text-anchor="middle" class="small">90.00%</text>
+  <rect x="650" y="1172" width="100" height="24" class="node neutral-box"/>
+  <text x="700" y="1188" text-anchor="middle" class="flat">持平</text>
+
+  <rect x="60" y="1196" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1212" text-anchor="middle" class="small">排序质量</text>
+  <rect x="190" y="1196" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1212" text-anchor="middle" class="small">MRR</text>
+  <rect x="370" y="1196" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1212" text-anchor="middle" class="small">0.6361</text>
+  <rect x="510" y="1196" width="140" height="24" class="node risk-box"/>
+  <text x="580" y="1212" text-anchor="middle" class="up">0.7168</text>
+  <rect x="650" y="1196" width="100" height="24" class="node risk-box"/>
+  <text x="700" y="1212" text-anchor="middle" class="up">+8.08%</text>
+
+  <rect x="60" y="1220" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1236" text-anchor="middle" class="small"></text>
+  <rect x="190" y="1220" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1236" text-anchor="middle" class="small">NDCG@3</text>
+  <rect x="370" y="1220" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1236" text-anchor="middle" class="small">0.6516</text>
+  <rect x="510" y="1220" width="140" height="24" class="node risk-box"/>
+  <text x="580" y="1236" text-anchor="middle" class="up">0.7385</text>
+  <rect x="650" y="1220" width="100" height="24" class="node risk-box"/>
+  <text x="700" y="1236" text-anchor="middle" class="up">+8.69%</text>
+
+  <rect x="60" y="1244" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1260" text-anchor="middle" class="small"></text>
+  <rect x="190" y="1244" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1260" text-anchor="middle" class="small">MAP</text>
+  <rect x="370" y="1244" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1260" text-anchor="middle" class="small">0.6361</text>
+  <rect x="510" y="1244" width="140" height="24" class="node risk-box"/>
+  <text x="580" y="1260" text-anchor="middle" class="up">0.7168</text>
+  <rect x="650" y="1244" width="100" height="24" class="node risk-box"/>
+  <text x="700" y="1260" text-anchor="middle" class="up">+8.08%</text>
+
+  <rect x="60" y="1268" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1284" text-anchor="middle" class="small">精确率</text>
+  <rect x="190" y="1268" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1284" text-anchor="middle" class="small">Precision@1</text>
+  <rect x="370" y="1268" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1284" text-anchor="middle" class="small">46.67%</text>
+  <rect x="510" y="1268" width="140" height="24" class="node risk-box"/>
+  <text x="580" y="1284" text-anchor="middle" class="up">60.00%</text>
+  <rect x="650" y="1268" width="100" height="24" class="node risk-box"/>
+  <text x="700" y="1284" text-anchor="middle" class="up">+13.33%</text>
+
+  <rect x="60" y="1292" width="130" height="24" class="node neutral-box"/>
+  <text x="125" y="1308" text-anchor="middle" class="small">F1值</text>
+  <rect x="190" y="1292" width="180" height="24" class="node neutral-box"/>
+  <text x="280" y="1308" text-anchor="middle" class="small">F1@1</text>
+  <rect x="370" y="1292" width="140" height="24" class="node neutral-box"/>
+  <text x="440" y="1308" text-anchor="middle" class="small">0.4667</text>
+  <rect x="510" y="1292" width="140" height="24" class="node risk-box"/>
+  <text x="580" y="1308" text-anchor="middle" class="up">0.6000</text>
+  <rect x="650" y="1292" width="100" height="24" class="node risk-box"/>
+  <text x="700" y="1308" text-anchor="middle" class="up">+13.33%</text>
+
+  <!-- ================================================================ -->
+  <!-- 踩坑与修正 -->
+  <!-- ================================================================ -->
+  <text x="1150" y="1070" text-anchor="middle" class="title">⚠️ 踩坑与修正</text>
+
+  <rect x="870" y="1100" width="260" height="44" class="node risk-box"/>
+  <text x="1000" y="1120" text-anchor="middle" class="sublabel">❌ 评估非随机 → 结果虚高40%</text>
+  <text x="1000" y="1136" text-anchor="middle" class="small">按顺序取前30条 → random.sample()</text>
+
+  <rect x="870" y="1158" width="260" height="44" class="node risk-box"/>
+  <text x="1000" y="1178" text-anchor="middle" class="sublabel">❌ Epoch=5 过拟合</text>
+  <text x="1000" y="1194" text-anchor="middle" class="small">第3个epoch后指标下降 → Epoch=2</text>
+
+  <rect x="870" y="1216" width="260" height="44" class="node risk-box"/>
+  <text x="1000" y="1236" text-anchor="middle" class="sublabel">❌ Batch=8 不稳定</text>
+  <text x="1000" y="1252" text-anchor="middle" class="small">小数据集大batch不稳 → Batch=1</text>
+
+  <rect x="870" y="1274" width="260" height="44" class="node risk-box"/>
+  <text x="1000" y="1294" text-anchor="middle" class="sublabel">❌ Milvus维度不匹配</text>
+  <text x="1000" y="1310" text-anchor="middle" class="small">768维 vs 128维 → 重建向量库</text>
+
+  <!-- ================================================================ -->
+  <!-- 训练参数表 -->
+  <!-- ================================================================ -->
+  <text x="400" y="1400" text-anchor="middle" class="title">⚙️ 训练参数（training_result.json）</text>
+
+  <rect x="80" y="1430" width="240" height="44" class="node neutral-box"/>
+  <text x="200" y="1450" text-anchor="middle" class="sublabel">基础模型</text>
+  <rect x="320" y="1430" width="300" height="44" class="node neutral-box"/>
+  <text x="470" y="1450" text-anchor="middle" class="sublabel">BAAI / bge-base-zh-v1.5</text>
+  <text x="470" y="1468" text-anchor="middle" class="small">BERT-base / 1.1亿参数 / 768维</text>
+
+  <rect x="80" y="1474" width="240" height="44" class="node neutral-box"/>
+  <text x="200" y="1494" text-anchor="middle" class="sublabel">损失函数</text>
+  <rect x="320" y="1474" width="300" height="44" class="node neutral-box"/>
+  <text x="470" y="1494" text-anchor="middle" class="sublabel">TripletLoss</text>
+  <text x="470" y="1512" text-anchor="middle" class="small">拉近正例 / 推远负例</text>
+
+  <rect x="80" y="1518" width="240" height="44" class="node neutral-box"/>
+  <text x="200" y="1538" text-anchor="middle" class="sublabel">Epochs / Batch / lr</text>
+  <rect x="320" y="1518" width="300" height="44" class="node neutral-box"/>
+  <text x="470" y="1538" text-anchor="middle" class="sublabel">2 / 1 / 2e-5</text>
+  <text x="470" y="1556" text-anchor="middle" class="small">小数据集小batch → 避免过拟合</text>
+
+  <rect x="80" y="1562" width="240" height="44" class="node neutral-box"/>
+  <text x="200" y="1582" text-anchor="middle" class="sublabel">Warmup / 设备</text>
+  <rect x="320" y="1562" width="300" height="44" class="node neutral-box"/>
+  <text x="470" y="1582" text-anchor="middle" class="sublabel">20步 / CUDA GPU</text>
+  <text x="470" y="1600" text-anchor="middle" class="small">RTX 3060 Laptop / ~3分钟</text>
+
+  <rect x="80" y="1606" width="240" height="44" class="node neutral-box"/>
+  <text x="200" y="1626" text-anchor="middle" class="sublabel">训练/评估划分</text>
+  <rect x="320" y="1606" width="300" height="44" class="node neutral-box"/>
+  <text x="470" y="1626" text-anchor="middle" class="sublabel">170条训练 / 30条评估</text>
+  <text x="470" y="1644" text-anchor="middle" class="small">随机抽取 / seed=42</text>
+
+  <rect x="80" y="1650" width="240" height="44" class="node neutral-box"/>
+  <text x="200" y="1670" text-anchor="middle" class="sublabel">训练过程</text>
+  <rect x="320" y="1650" width="300" height="44" class="node neutral-box"/>
+  <text x="470" y="1670" text-anchor="middle" class="sublabel">Loss: 0.4521 → 0.3105</text>
+  <text x="470" y="1688" text-anchor="middle" class="small">TripletAcc: 93.33% → 90.00%</text>
+
+  <!-- ================================================================ -->
+  <!-- 产出物清单 -->
+  <!-- ================================================================ -->
+  <text x="720" y="1770" text-anchor="middle" class="title">📦 产出物清单</text>
+
+  <rect x="80" y="1800" width="560" height="32" class="node neutral-box"/>
+  <text x="360" y="1820" text-anchor="middle" class="sublabel">产出物</text>
+  <rect x="640" y="1800" width="260" height="32" class="node neutral-box"/>
+  <text x="770" y="1820" text-anchor="middle" class="sublabel">路径</text>
+  <line x1="80" y1="1832" x2="900" y2="1832" stroke="var(--line)" stroke-width="1.5"/>
+
+  <rect x="80" y="1832" width="560" height="26" class="node neutral-box"/>
+  <text x="360" y="1850" text-anchor="middle" class="small">训练三元组 (200条)</text>
+  <rect x="640" y="1832" width="260" height="26" class="node neutral-box"/>
+  <text x="770" y="1850" text-anchor="middle" class="small">finetune/data/train_triplets.json</text>
+
+  <rect x="80" y="1858" width="560" height="26" class="node neutral-box"/>
+  <text x="360" y="1876" text-anchor="middle" class="small">评估 query (30条随机)</text>
+  <rect x="640" y="1858" width="260" height="26" class="node neutral-box"/>
+  <text x="770" y="1876" text-anchor="middle" class="small">finetune/data/eval_queries.json</text>
+
+  <rect x="80" y="1884" width="560" height="26" class="node neutral-box"/>
+  <text x="360" y="1902" text-anchor="middle" class="small">微调后模型 (768维 / ~390MB)</text>
+  <rect x="640" y="1884" width="260" height="26" class="node neutral-box"/>
+  <text x="770" y="1902" text-anchor="middle" class="small">finetune/output/bge-base-zh-v1.5-finetuned/</text>
+
+  <rect x="80" y="1910" width="560" height="26" class="node neutral-box"/>
+  <text x="360" y="1928" text-anchor="middle" class="small">评估结果 (22项指标)</text>
+  <rect x="640" y="1910" width="260" height="26" class="node neutral-box"/>
+  <text x="770" y="1928" text-anchor="middle" class="small">finetune/output/evaluation_result.json</text>
+
+  <rect x="80" y="1936" width="560" height="26" class="node neutral-box"/>
+  <text x="360" y="1954" text-anchor="middle" class="small">训练结果</text>
+  <rect x="640" y="1936" width="260" height="26" class="node neutral-box"/>
+  <text x="770" y="1954" text-anchor="middle" class="small">finetune/output/training_result.json</text>
+
+  <rect x="80" y="1962" width="560" height="26" class="node neutral-box"/>
+  <text x="360" y="1980" text-anchor="middle" class="small">数据准备 / 训练 / 评估 / 一键运行脚本</text>
+  <rect x="640" y="1962" width="260" height="26" class="node neutral-box"/>
+  <text x="770" y="1980" text-anchor="middle" class="small">finetune/*.py (4个)</text>
+
+  <rect x="80" y="1988" width="560" height="26" class="node neutral-box"/>
+  <text x="360" y="2006" text-anchor="middle" class="small">过程 / 指标 / 优化总结文档</text>
+  <rect x="640" y="1988" width="260" height="26" class="node neutral-box"/>
+  <text x="770" y="2006" text-anchor="middle" class="small">*.md (4份)</text>
+
+  <!-- ================================================================ -->
+  <!-- 演进路线 -->
+  <!-- ================================================================ -->
+  <text x="720" y="2080" text-anchor="middle" class="title">📈 RAG工单演进路线</text>
+
+  <rect x="40" y="2120" width="120" height="40" class="node neutral-box"/>
+  <text x="100" y="2140" text-anchor="middle" class="label">工单2</text>
+  <text x="100" y="2156" text-anchor="middle" class="small">TF-IDF+SVD</text>
+
+  <path d="M 160 2140 L 210 2140" class="edge" marker-end="url(#arrow)"/>
+  <rect x="210" y="2120" width="120" height="40" class="node neutral-box"/>
+  <text x="270" y="2140" text-anchor="middle" class="label">工单3→7</text>
+  <text x="270" y="2156" text-anchor="middle" class="small">RAG系统迭代</text>
+
+  <path d="M 330 2140 L 380 2140" class="edge" marker-end="url(#arrow)"/>
+  <rect x="380" y="2120" width="120" height="40" class="node neutral-box"/>
+  <text x="440" y="2140" text-anchor="middle" class="label">工单8→10</text>
+  <text x="440" y="2156" text-anchor="middle" class="small">持续优化</text>
+
+  <path d="M 500 2140 L 550 2140" class="edge-thick" marker-end="url(#arrow)"/>
+
+  <rect x="550" y="2114" width="380" height="52" class="node input-box"/>
+  <text x="740" y="2136" text-anchor="middle" class="label">🚀 工单11 — Embedding模型微调</text>
+  <text x="740" y="2156" text-anchor="middle" class="small">bge-base微调 | TripletLoss | 22项指标 | +13.33% Recall@1</text>
+  <rect x="880" y="2102" width="50" height="22" class="peak-badge"/>
+  <text x="905" y="2117" text-anchor="middle" class="peak-text">ML</text>
+
+</svg>
+</main>
