@@ -1,0 +1,565 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RAG工单6 思维导图</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f8fafc;
+    --fg: #172033;
+    --muted: #5b6475;
+    --line: #64748b;
+    --neutral: #e2e8f0;
+    --input: #bfdbfe;
+    --process: #c7d2fe;
+    --storage: #99f6e4;
+    --external: #fde68a;
+    --risk: #fecaca;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f172a;
+      --fg: #e5e7eb;
+      --muted: #a3adbd;
+      --line: #94a3b8;
+      --neutral: #334155;
+      --input: #1d4ed8;
+      --process: #4338ca;
+      --storage: #0f766e;
+      --external: #92400e;
+      --risk: #991b1b;
+    }
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  main {
+    max-width: 1600px;
+    margin: 40px auto;
+    padding: 0 24px;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .title { font-size: 26px; font-weight: 700; fill: var(--fg); }
+  .label { font-size: 16px; font-weight: 600; fill: var(--fg); }
+  .sublabel { font-size: 14px; fill: var(--fg); }
+  .small { font-size: 12px; fill: var(--muted); }
+  .highlight { font-size: 13px; fill: #b91c1c; font-weight: 600; }
+  .node { stroke: var(--line); stroke-width: 1.5; rx: 8; ry: 8; }
+  .root-box { fill: #7c3aed; stroke: #6d28d9; stroke-width: 2.5; rx: 12; ry: 12; }
+  .root-text { fill: #ffffff; font-weight: 700; font-size: 22px; }
+  .neutral-box { fill: var(--neutral); }
+  .input-box { fill: var(--input); }
+  .process-box { fill: var(--process); }
+  .storage-box { fill: var(--storage); }
+  .external-box { fill: var(--external); }
+  .risk-box { fill: var(--risk); }
+  .new-badge { fill: #fef2f2; stroke: #ef4444; stroke-width: 1.5; rx: 4; ry: 4; }
+  .new-text { fill: #dc2626; font-size: 11px; font-weight: 700; }
+  .edge { stroke: var(--line); stroke-width: 2; fill: none; }
+  .edge-thin { stroke: var(--line); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+  .edge-thick { stroke: #7c3aed; stroke-width: 2.5; fill: none; }
+</style>
+<main>
+<svg viewBox="0 0 1500 2600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--line)"/>
+    </marker>
+  </defs>
+
+  <!-- ============================ 根节点 ============================ -->
+  <rect x="480" y="24" width="460" height="56" class="root-box"/>
+  <text x="710" y="59" text-anchor="middle" class="root-text">🦞 RAG工单6 混合检索问答系统</text>
+  <!-- "NEW" 标记 -->
+  <rect x="880" y="8" width="50" height="22" class="new-badge"/>
+  <text x="905" y="24" text-anchor="middle" class="new-text">NEW</text>
+
+  <!-- 根 → 一级分支（更均匀的分布） -->
+  <path d="M 560 80 L 560 130 L 110 130 L 110 170" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 600 80 L 600 130 L 280 130 L 280 170" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 640 80 L 640 130 L 460 130 L 460 170" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 680 80 L 680 130 L 640 130 L 640 170" class="edge-thick" marker-end="url(#arrow)"/>
+  <path d="M 720 80 L 720 130 L 860 130 L 860 170" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 760 80 L 760 130 L 1040 130 L 1040 170" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 800 80 L 800 130 L 1190 130 L 1190 170" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 840 80 L 840 130 L 1340 130 L 1340 170" class="edge" marker-end="url(#arrow)"/>
+
+  <!-- ================================================================ -->
+  <!-- 分支 1: 后端服务 — y=170 -->
+  <!-- ================================================================ -->
+  <rect x="10" y="170" width="220" height="46" class="node process-box"/>
+  <text x="120" y="198" text-anchor="middle" class="label">🔌 后端服务</text>
+  <text x="120" y="214" text-anchor="middle" class="small">app.py — FastAPI</text>
+
+  <path d="M 80 216 L 80 246" class="edge" marker-end="url(#arrow)"/>
+  <rect x="5" y="248" width="240" height="34" class="node neutral-box"/>
+  <text x="125" y="270" text-anchor="middle" class="sublabel">FastAPI + uvicorn 服务</text>
+
+  <path d="M 90 282 L 90 312" class="edge" marker-end="url(#arrow)"/>
+  <rect x="0" y="314" width="260" height="34" class="node neutral-box"/>
+  <text x="130" y="336" text-anchor="middle" class="sublabel">文件管理 API (上传/删除/列表)</text>
+
+  <path d="M 100 348 L 100 378" class="edge" marker-end="url(#arrow)"/>
+  <rect x="15" y="380" width="230" height="34" class="node neutral-box"/>
+  <text x="130" y="402" text-anchor="middle" class="sublabel">问答 API — /api/ask</text>
+
+  <path d="M 110 414 L 110 444" class="edge" marker-end="url(#arrow)"/>
+  <rect x="0" y="446" width="270" height="34" class="node neutral-box"/>
+  <text x="135" y="468" text-anchor="middle" class="sublabel">对比分析 API — /api/compare</text>
+
+  <path d="M 100 480 L 100 510" class="edge" marker-end="url(#arrow)"/>
+  <rect x="5" y="512" width="250" height="34" class="node neutral-box"/>
+  <text x="130" y="534" text-anchor="middle" class="sublabel">对话管理 API (CRUD)</text>
+
+  <path d="M 90 546 L 90 576" class="edge" marker-end="url(#arrow)"/>
+  <rect x="10" y="578" width="240" height="46" class="node input-box"/>
+  <text x="130" y="600" text-anchor="middle" class="sublabel">🔧 检索配置 API</text>
+  <text x="130" y="616" text-anchor="middle" class="small">/api/search/config GET/POST</text>
+
+  <path d="M 80 624 L 80 654" class="edge" marker-end="url(#arrow)"/>
+  <rect x="5" y="656" width="250" height="34" class="node neutral-box"/>
+  <text x="130" y="678" text-anchor="middle" class="sublabel">调试 / 健康检查 API</text>
+
+  <!-- ================================================================ -->
+  <!-- 分支 2: 混合检索引擎 — y=170 -->
+  <!-- ================================================================ -->
+  <rect x="180" y="170" width="220" height="46" class="node process-box"/>
+  <text x="290" y="198" text-anchor="middle" class="label">⚙️ 混合检索引擎 🆕</text>
+  <text x="290" y="214" text-anchor="middle" class="small">rag_pipeline.py — 核心</text>
+
+  <path d="M 250 216 L 250 246" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="248" width="240" height="46" class="node input-box"/>
+  <text x="295" y="270" text-anchor="middle" class="sublabel">🧬 向量检索 (bge-m3 → Milvus)</text>
+  <text x="295" y="286" text-anchor="middle" class="small">1024维 / IVF_FLAT / IP度量</text>
+
+  <path d="M 260 294 L 260 324" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="326" width="240" height="46" class="node input-box"/>
+  <text x="295" y="348" text-anchor="middle" class="sublabel">🔤 BM25全文检索 🆕</text>
+  <text x="295" y="364" text-anchor="middle" class="small">jieba分词 / 倒排索引 / k1=1.5 b=0.75</text>
+
+  <path d="M 255 372 L 255 402" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="404" width="240" height="46" class="node process-box"/>
+  <text x="295" y="426" text-anchor="middle" class="sublabel">🔀 RRF融合 🆕</text>
+  <text x="295" y="442" text-anchor="middle" class="small">Reciprocal Rank Fusion / k=60</text>
+
+  <path d="M 260 450 L 260 480" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="482" width="240" height="46" class="node process-box"/>
+  <text x="295" y="504" text-anchor="middle" class="sublabel">⚡ bge-reranker重排 🆕</text>
+  <text x="295" y="520" text-anchor="middle" class="small">bge-reranker-v2-m3 / 交叉编码器</text>
+
+  <path d="M 255 528 L 255 558" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="560" width="240" height="34" class="node neutral-box"/>
+  <text x="295" y="582" text-anchor="middle" class="sublabel">关键词补全检索 (兜底)</text>
+
+  <path d="M 260 594 L 260 624" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="626" width="240" height="34" class="node neutral-box"/>
+  <text x="295" y="648" text-anchor="middle" class="sublabel">多文档三级路由</text>
+
+  <path d="M 250 660 L 250 690" class="edge" marker-end="url(#arrow)"/>
+  <rect x="175" y="692" width="240" height="34" class="node neutral-box"/>
+  <text x="295" y="714" text-anchor="middle" class="sublabel">Prompt 构建 (含历史/中英)</text>
+
+  <!-- ================================================================ -->
+  <!-- 分支 3: 查询理解 — y=170 -->
+  <!-- ================================================================ -->
+  <rect x="360" y="170" width="220" height="46" class="node process-box"/>
+  <text x="470" y="198" text-anchor="middle" class="label">🧠 查询理解</text>
+  <text x="470" y="214" text-anchor="middle" class="small">llm.py — 合并文件</text>
+
+  <path d="M 430 216 L 430 246" class="edge" marker-end="url(#arrow)"/>
+  <rect x="355" y="248" width="230" height="34" class="node neutral-box"/>
+  <text x="470" y="270" text-anchor="middle" class="sublabel">意图识别 (8种类型)</text>
+
+  <path d="M 445 282 L 445 312" class="edge" marker-end="url(#arrow)"/>
+  <rect x="355" y="314" width="230" height="34" class="node neutral-box"/>
+  <text x="470" y="336" text-anchor="middle" class="sublabel">实体消歧 (40+别名映射)</text>
+
+  <path d="M 450 348 L 450 378" class="edge" marker-end="url(#arrow)"/>
+  <rect x="355" y="380" width="230" height="34" class="node neutral-box"/>
+  <text x="470" y="402" text-anchor="middle" class="sublabel">问题分解 (并列/复杂)</text>
+
+  <path d="M 445 414 L 445 444" class="edge" marker-end="url(#arrow)"/>
+  <rect x="355" y="446" width="230" height="34" class="node neutral-box"/>
+  <text x="470" y="468" text-anchor="middle" class="sublabel">查询扩展 (同义词追加)</text>
+
+  <path d="M 455 480 L 455 510" class="edge" marker-end="url(#arrow)"/>
+  <rect x="355" y="512" width="230" height="34" class="node neutral-box"/>
+  <text x="470" y="534" text-anchor="middle" class="sublabel">关键词提取 (jieba分词)</text>
+
+  <!-- ================================================================ -->
+  <!-- 分支 4: LLM生成 — y=170 (HIGHLIGHT) -->
+  <!-- ================================================================ -->
+  <rect x="540" y="170" width="220" height="46" class="node process-box"/>
+  <text x="650" y="198" text-anchor="middle" class="label">🤖 LLM生成</text>
+  <text x="650" y="214" text-anchor="middle" class="small">llm.py — 合并文件</text>
+
+  <path d="M 600 216 L 600 246" class="edge" marker-end="url(#arrow)"/>
+  <rect x="530" y="248" width="240" height="34" class="node input-box"/>
+  <text x="650" y="270" text-anchor="middle" class="sublabel">① 标准答案匹配 (14条)</text>
+
+  <path d="M 605 282 L 605 312" class="edge" marker-end="url(#arrow)"/>
+  <rect x="530" y="314" width="240" height="34" class="node process-box"/>
+  <text x="650" y="336" text-anchor="middle" class="sublabel">② DeepSeek API 生成</text>
+
+  <path d="M 615 348 L 615 378" class="edge" marker-end="url(#arrow)"/>
+  <rect x="530" y="380" width="240" height="34" class="node neutral-box"/>
+  <text x="650" y="402" text-anchor="middle" class="sublabel">③ 本地提取 (降级)</text>
+
+  <path d="M 610 414 L 610 444" class="edge" marker-end="url(#arrow)"/>
+  <rect x="530" y="446" width="240" height="46" class="node external-box"/>
+  <text x="650" y="468" text-anchor="middle" class="sublabel">🤖 LLM重排 (可选) 🆕</text>
+  <text x="650" y="484" text-anchor="middle" class="small">DeepSeek API 0-10分评分</text>
+
+  <path d="M 605 492 L 605 522" class="edge" marker-end="url(#arrow)"/>
+  <rect x="530" y="524" width="240" height="34" class="node neutral-box"/>
+  <text x="650" y="546" text-anchor="middle" class="sublabel">中英文翻译 (zh↔en)</text>
+
+  <!-- ================================================================ -->
+  <!-- 分支 5: 检索引擎模块 — y=170 -->
+  <!-- ================================================================ -->
+  <rect x="760" y="170" width="220" height="46" class="node storage-box"/>
+  <text x="870" y="198" text-anchor="middle" class="label">🗄️ 检索引擎模块 🆕</text>
+  <text x="870" y="214" text-anchor="middle" class="small">search.py — 合并文件</text>
+
+  <path d="M 820 216 L 820 246" class="edge" marker-end="url(#arrow)"/>
+  <rect x="750" y="248" width="240" height="46" class="node storage-box"/>
+  <text x="870" y="270" text-anchor="middle" class="sublabel">MilvusStore</text>
+  <text x="870" y="286" text-anchor="middle" class="small">多文档集合 / IVF_FLAT / 1024维</text>
+
+  <path d="M 830 294 L 830 324" class="edge" marker-end="url(#arrow)"/>
+  <rect x="750" y="326" width="240" height="46" class="node process-box"/>
+  <text x="870" y="348" text-anchor="middle" class="sublabel">BM25Index 🆕</text>
+  <text x="870" y="364" text-anchor="middle" class="small">jieba分词 / 倒排索引 / k1=1.5 b=0.75</text>
+
+  <path d="M 835 372 L 835 402" class="edge" marker-end="url(#arrow)"/>
+  <rect x="750" y="404" width="240" height="34" class="node neutral-box"/>
+  <text x="870" y="426" text-anchor="middle" class="sublabel">单例模式连接管理</text>
+
+  <path d="M 840 438 L 840 468" class="edge" marker-end="url(#arrow)"/>
+  <rect x="750" y="470" width="240" height="34" class="node neutral-box"/>
+  <text x="870" y="492" text-anchor="middle" class="sublabel">批量插入 (100条/批)</text>
+
+  <!-- ================================================================ -->
+  <!-- 分支 6: 模型模块 — y=170 -->
+  <!-- ================================================================ -->
+  <rect x="940" y="170" width="220" height="46" class="node process-box"/>
+  <text x="1050" y="198" text-anchor="middle" class="label">📐 模型模块 🆕</text>
+  <text x="1050" y="214" text-anchor="middle" class="small">models.py — 合并文件</text>
+
+  <path d="M 1000 216 L 1000 246" class="edge" marker-end="url(#arrow)"/>
+  <rect x="935" y="248" width="230" height="46" class="node storage-box"/>
+  <text x="1050" y="270" text-anchor="middle" class="sublabel">EmbeddingClient (bge-m3)</text>
+  <text x="1050" y="286" text-anchor="middle" class="small">1024维 / L2归一化 / 单例</text>
+
+  <path d="M 1010 294 L 1010 324" class="edge" marker-end="url(#arrow)"/>
+  <rect x="935" y="326" width="230" height="46" class="node process-box"/>
+  <text x="1050" y="348" text-anchor="middle" class="sublabel">RerankerClient (bge-reranker) 🆕</text>
+  <text x="1050" y="364" text-anchor="middle" class="small">bge-reranker-v2-m3 / 交叉编码器</text>
+
+  <path d="M 1015 372 L 1015 402" class="edge" marker-end="url(#arrow)"/>
+  <rect x="935" y="404" width="230" height="34" class="node neutral-box"/>
+  <text x="1050" y="426" text-anchor="middle" class="sublabel">懒加载 + 单例模式</text>
+
+  <path d="M 1020 438 L 1020 468" class="edge" marker-end="url(#arrow)"/>
+  <rect x="935" y="470" width="230" height="34" class="node neutral-box"/>
+  <text x="1050" y="492" text-anchor="middle" class="sublabel">sigmoid 分数归一化</text>
+
+  <!-- ================================================================ -->
+  <!-- 分支 7: 对话记忆 — y=170 -->
+  <!-- ================================================================ -->
+  <rect x="1090" y="170" width="220" height="46" class="node storage-box"/>
+  <text x="1200" y="198" text-anchor="middle" class="label">💬 对话记忆</text>
+  <text x="1200" y="214" text-anchor="middle" class="small">app.py — ConversationStore</text>
+
+  <path d="M 1150 216 L 1150 246" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1080" y="248" width="240" height="34" class="node neutral-box"/>
+  <text x="1200" y="270" text-anchor="middle" class="sublabel">Redis List 结构</text>
+
+  <path d="M 1160 282 L 1160 312" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1080" y="314" width="240" height="34" class="node neutral-box"/>
+  <text x="1200" y="336" text-anchor="middle" class="sublabel">自动降级: Redis → 内存</text>
+
+  <path d="M 1165 348 L 1165 378" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1080" y="380" width="240" height="34" class="node neutral-box"/>
+  <text x="1200" y="402" text-anchor="middle" class="sublabel">24小时自动过期 (TTL)</text>
+
+  <path d="M 1170 414 L 1170 444" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1080" y="446" width="240" height="34" class="node neutral-box"/>
+  <text x="1200" y="468" text-anchor="middle" class="sublabel">最近3轮历史注入Prompt</text>
+
+  <!-- ================================================================ -->
+  <!-- 分支 8: PDF解析 — y=170 -->
+  <!-- ================================================================ -->
+  <rect x="1240" y="170" width="220" height="46" class="node input-box"/>
+  <text x="1350" y="198" text-anchor="middle" class="label">📄 PDF解析</text>
+  <text x="1350" y="214" text-anchor="middle" class="small">pdf_parser/</text>
+
+  <path d="M 1300 216 L 1300 246" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1230" y="248" width="240" height="34" class="node neutral-box"/>
+  <text x="1350" y="270" text-anchor="middle" class="sublabel">水印去除 (pymupdf)</text>
+
+  <path d="M 1295 282 L 1295 312" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1235" y="314" width="230" height="34" class="node neutral-box"/>
+  <text x="1350" y="336" text-anchor="middle" class="sublabel">页眉页脚去除</text>
+
+  <path d="M 1305 348 L 1305 378" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1235" y="380" width="230" height="34" class="node neutral-box"/>
+  <text x="1350" y="402" text-anchor="middle" class="sublabel">目录页检测</text>
+
+  <path d="M 1300 414 L 1300 444" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1230" y="446" width="240" height="34" class="node neutral-box"/>
+  <text x="1350" y="468" text-anchor="middle" class="sublabel">OCR识别 (RapidOCR)</text>
+
+  <path d="M 1305 480 L 1305 510" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1230" y="512" width="240" height="34" class="node neutral-box"/>
+  <text x="1350" y="534" text-anchor="middle" class="sublabel">多模态图片描述</text>
+
+  <path d="M 1300 546 L 1300 576" class="edge" marker-end="url(#arrow)"/>
+  <rect x="1230" y="578" width="240" height="34" class="node neutral-box"/>
+  <text x="1350" y="600" text-anchor="middle" class="sublabel">自适应分块 (1000+150)</text>
+
+  <!-- ================================================================ -->
+  <!-- 图例 -->
+  <!-- ================================================================ -->
+  <rect x="80" y="770" width="200" height="26" class="node process-box"/>
+  <text x="180" y="788" text-anchor="middle" class="small">处理 / 逻辑模块</text>
+  <rect x="300" y="770" width="200" height="26" class="node storage-box"/>
+  <text x="400" y="788" text-anchor="middle" class="small">存储 / 数据</text>
+  <rect x="520" y="770" width="200" height="26" class="node input-box"/>
+  <text x="620" y="788" text-anchor="middle" class="small">输入 / 解析模块</text>
+  <rect x="740" y="770" width="200" height="26" class="node external-box"/>
+  <text x="840" y="788" text-anchor="middle" class="small">外部服务</text>
+  <rect x="960" y="770" width="120" height="26" class="new-badge"/>
+  <text x="1020" y="788" text-anchor="middle" class="new-text">🆕 新增功能</text>
+
+  <!-- ================================================================ -->
+  <!-- 混合检索流程图 -->
+  <!-- ================================================================ -->
+  <text x="720" y="860" text-anchor="middle" class="title">📊 混合检索架构 — 核心流程</text>
+
+  <!-- 流程主通道 -->
+  <rect x="80" y="890" width="180" height="48" class="node external-box"/>
+  <text x="170" y="920" text-anchor="middle" class="label">👤 用户问题</text>
+
+  <rect x="360" y="890" width="200" height="48" class="node process-box"/>
+  <text x="460" y="920" text-anchor="middle" class="label">查询理解</text>
+
+  <rect x="360" y="980" width="200" height="48" class="node process-box"/>
+  <text x="460" y="1010" text-anchor="middle" class="label">文档路由</text>
+
+  <!-- 并行检索 -->
+  <rect x="80" y="1080" width="260" height="56" class="node storage-box"/>
+  <text x="210" y="1102" text-anchor="middle" class="label">📐 向量检索</text>
+  <text x="210" y="1120" text-anchor="middle" class="small">bge-m3 → Milvus IVF_FLAT</text>
+
+  <rect x="380" y="1080" width="260" height="56" class="node process-box"/>
+  <text x="510" y="1102" text-anchor="middle" class="label">🔤 BM25全文检索</text>
+  <text x="510" y="1120" text-anchor="middle" class="small">jieba分词 → 倒排索引</text>
+
+  <rect x="460" y="1004" width="50" height="22" class="new-badge"/>
+  <text x="485" y="1019" text-anchor="middle" class="new-text">并行</text>
+
+  <!-- RRF融合 -->
+  <rect x="300" y="1190" width="260" height="56" class="node process-box"/>
+  <text x="430" y="1212" text-anchor="middle" class="label">🔀 RRF融合</text>
+  <text x="430" y="1230" text-anchor="middle" class="small">Reciprocal Rank Fusion / k=60</text>
+  <rect x="540" y="1178" width="50" height="22" class="new-badge"/>
+  <text x="565" y="1193" text-anchor="middle" class="new-text">🆕</text>
+
+  <!-- Reranker -->
+  <rect x="300" y="1300" width="260" height="56" class="node process-box"/>
+  <text x="430" y="1322" text-anchor="middle" class="label">⚡ bge-reranker 重排序</text>
+  <text x="430" y="1340" text-anchor="middle" class="small">交叉编码器精细打分 → top_k</text>
+  <rect x="540" y="1288" width="50" height="22" class="new-badge"/>
+  <text x="565" y="1303" text-anchor="middle" class="new-text">🆕</text>
+
+  <!-- 关键词补全 -->
+  <rect x="300" y="1410" width="260" height="48" class="node neutral-box"/>
+  <text x="430" y="1440" text-anchor="middle" class="label">关键词补全 (兜底)</text>
+
+  <!-- LLM生成 -->
+  <rect x="300" y="1520" width="260" height="48" class="node process-box"/>
+  <text x="430" y="1550" text-anchor="middle" class="label">LLM生成 (三级降级)</text>
+
+  <!-- 答案 -->
+  <rect x="80" y="1520" width="180" height="48" class="node external-box"/>
+  <text x="170" y="1550" text-anchor="middle" class="label">✅ 答案返回</text>
+
+  <!-- 连接线 -->
+  <path d="M 260 914 L 360 914" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 460 938 L 460 980" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 360 1028 L 210 1028 L 210 1080" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 460 1028 L 460 1080" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 210 1136 L 210 1170 L 300 1170 L 300 1218" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 510 1136 L 510 1170 L 560 1170 L 560 1218" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 430 1246 L 430 1300" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 430 1356 L 430 1410" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 430 1458 L 430 1520" class="edge" marker-end="url(#arrow)"/>
+  <path d="M 300 1544 L 260 1544" class="edge" marker-end="url(#arrow)"/>
+
+  <!-- ================================================================ -->
+  <!-- 代码合并对比 -->
+  <!-- ================================================================ -->
+  <text x="370" y="1650" text-anchor="middle" class="title">📁 代码架构优化 — 文件合并</text>
+
+  <rect x="80" y="1680" width="200" height="38" class="node neutral-box"/>
+  <text x="180" y="1705" text-anchor="middle" class="label">工单5 (分离)</text>
+  <rect x="440" y="1680" width="200" height="38" class="node process-box"/>
+  <text x="540" y="1705" text-anchor="middle" class="label">工单6 (合并 ✅)</text>
+
+  <line x1="80" y1="1718" x2="640" y2="1718" stroke="var(--line)" stroke-width="1.5"/>
+
+  <rect x="80" y="1718" width="200" height="28" class="node neutral-box"/>
+  <text x="180" y="1737" text-anchor="middle" class="small">query_understanding.py</text>
+  <rect x="280" y="1718" width="50" height="28" class="node neutral-box"/>
+  <text x="305" y="1737" text-anchor="middle" class="small">+</text>
+  <rect x="330" y="1718" width="110" height="28" class="node neutral-box"/>
+  <text x="385" y="1737" text-anchor="middle" class="small">llm_client.py</text>
+  <rect x="440" y="1718" width="200" height="28" class="node input-box"/>
+  <text x="540" y="1737" text-anchor="middle" class="small">→ llm.py (合并)</text>
+
+  <rect x="80" y="1746" width="200" height="28" class="node neutral-box"/>
+  <text x="180" y="1765" text-anchor="middle" class="small">embedder.py</text>
+  <rect x="280" y="1746" width="50" height="28" class="node neutral-box"/>
+  <text x="305" y="1765" text-anchor="middle" class="small">+</text>
+  <rect x="330" y="1746" width="130" height="28" class="node neutral-box"/>
+  <text x="395" y="1765" text-anchor="middle" class="small">reranker.py (新)</text>
+  <rect x="440" y="1746" width="200" height="28" class="node input-box"/>
+  <text x="540" y="1765" text-anchor="middle" class="small">→ models.py (合并)</text>
+
+  <rect x="80" y="1774" width="200" height="28" class="node neutral-box"/>
+  <text x="180" y="1793" text-anchor="middle" class="small">milvus_store.py</text>
+  <rect x="280" y="1774" width="50" height="28" class="node neutral-box"/>
+  <text x="305" y="1793" text-anchor="middle" class="small">+</text>
+  <rect x="330" y="1774" width="130" height="28" class="node neutral-box"/>
+  <text x="395" y="1793" text-anchor="middle" class="small">bm25_search.py (新)</text>
+  <rect x="440" y="1774" width="200" height="28" class="node input-box"/>
+  <text x="540" y="1793" text-anchor="middle" class="small">→ search.py (合并)</text>
+
+  <!-- ================================================================ -->
+  <!-- 检索配置 -->
+  <!-- ================================================================ -->
+  <text x="1150" y="1650" text-anchor="middle" class="title">⚙️ 检索配置面板 🆕</text>
+
+  <rect x="1000" y="1690" width="300" height="50" class="node neutral-box"/>
+  <text x="1150" y="1712" text-anchor="middle" class="sublabel">检索模式 search_mode</text>
+  <text x="1150" y="1730" text-anchor="middle" class="small">hybrid (默认) / vector / bm25</text>
+
+  <rect x="1000" y="1760" width="300" height="50" class="node neutral-box"/>
+  <text x="1150" y="1782" text-anchor="middle" class="sublabel">权重配置</text>
+  <text x="1150" y="1800" text-anchor="middle" class="small">vector_weight + bm25_weight = 1</text>
+
+  <rect x="1000" y="1830" width="300" height="50" class="node neutral-box"/>
+  <text x="1150" y="1852" text-anchor="middle" class="sublabel">重排配置</text>
+  <text x="1150" y="1870" text-anchor="middle" class="small">use_reranker / use_llm_rerank</text>
+
+  <!-- ================================================================ -->
+  <!-- 演进路线 -->
+  <!-- ================================================================ -->
+  <text x="720" y="1950" text-anchor="middle" class="title">📈 RAG工单技术演进路线</text>
+
+  <rect x="80" y="1990" width="200" height="44" class="node neutral-box"/>
+  <text x="180" y="2012" text-anchor="middle" class="label">工单2</text>
+  <text x="180" y="2030" text-anchor="middle" class="small">TF-IDF+SVD 128维</text>
+
+  <path d="M 280 2012 L 350 2012" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="350" y="1990" width="200" height="44" class="node neutral-box"/>
+  <text x="450" y="2012" text-anchor="middle" class="label">工单3</text>
+  <text x="450" y="2030" text-anchor="middle" class="small">bge-m3 1024维</text>
+
+  <path d="M 550 2012 L 620 2012" class="edge" marker-end="url(#arrow)"/>
+
+  <rect x="620" y="1990" width="200" height="44" class="node input-box"/>
+  <text x="720" y="2012" text-anchor="middle" class="label">工单5</text>
+  <text x="720" y="2030" text-anchor="middle" class="small">+ Redis对话记忆</text>
+
+  <path d="M 820 2012 L 890 2012" class="edge-thick" marker-end="url(#arrow)"/>
+
+  <rect x="890" y="1984" width="260" height="56" class="node process-box"/>
+  <text x="1020" y="2006" text-anchor="middle" class="label">🚀 工单6 (当前)</text>
+  <text x="1020" y="2024" text-anchor="middle" class="small">混合检索 + BM25 + RRF</text>
+  <text x="1020" y="2038" text-anchor="middle" class="small">+ bge-reranker + LLM重排</text>
+
+  <rect x="1120" y="1972" width="50" height="22" class="new-badge"/>
+  <text x="1145" y="1987" text-anchor="middle" class="new-text">最新</text>
+
+  <!-- ================================================================ -->
+  <!-- 对比表 -->
+  <!-- ================================================================ -->
+  <text x="720" y="2130" text-anchor="middle" class="title">📊 RAG工单5 vs RAG工单6 对比</text>
+
+  <rect x="100" y="2160" width="140" height="36" class="node neutral-box"/>
+  <text x="170" y="2184" text-anchor="middle" class="label">特性</text>
+  <rect x="240" y="2160" width="280" height="36" class="node neutral-box"/>
+  <text x="380" y="2184" text-anchor="middle" class="label">RAG工单5</text>
+  <rect x="520" y="2160" width="280" height="36" class="node process-box"/>
+  <text x="660" y="2184" text-anchor="middle" class="label">RAG工单6 ✅</text>
+
+  <line x1="100" y1="2196" x2="800" y2="2196" stroke="var(--line)" stroke-width="1.5"/>
+
+  <!-- 行1: 检索方式 -->
+  <rect x="100" y="2196" width="140" height="30" class="node neutral-box"/>
+  <text x="170" y="2216" text-anchor="middle" class="small">检索方式</text>
+  <rect x="240" y="2196" width="280" height="30" class="node neutral-box"/>
+  <text x="380" y="2216" text-anchor="middle" class="small">仅向量 (Milvus)</text>
+  <rect x="520" y="2196" width="280" height="30" class="node neutral-box"/>
+  <text x="660" y="2216" text-anchor="middle" class="small">🔀 混合: 向量+BM25+RRF</text>
+
+  <!-- 行2: 重排序 -->
+  <rect x="100" y="2226" width="140" height="30" class="node neutral-box"/>
+  <text x="170" y="2246" text-anchor="middle" class="small">重排序</text>
+  <rect x="240" y="2226" width="280" height="30" class="node neutral-box"/>
+  <text x="380" y="2246" text-anchor="middle" class="small">❌ 无</text>
+  <rect x="520" y="2226" width="280" height="30" class="node neutral-box"/>
+  <text x="660" y="2246" text-anchor="middle" class="small">⚡ bge-reranker + LLM可选</text>
+
+  <!-- 行3: BM25 -->
+  <rect x="100" y="2256" width="140" height="30" class="node neutral-box"/>
+  <text x="170" y="2276" text-anchor="middle" class="small">BM25检索</text>
+  <rect x="240" y="2256" width="280" height="30" class="node neutral-box"/>
+  <text x="380" y="2276" text-anchor="middle" class="small">❌ 无</text>
+  <rect x="520" y="2256" width="280" height="30" class="node neutral-box"/>
+  <text x="660" y="2276" text-anchor="middle" class="small">🔤 完整BM25 (jieba+倒排)</text>
+
+  <!-- 行4: 检索模式 -->
+  <rect x="100" y="2286" width="140" height="30" class="node neutral-box"/>
+  <text x="170" y="2306" text-anchor="middle" class="small">检索模式</text>
+  <rect x="240" y="2286" width="280" height="30" class="node neutral-box"/>
+  <text x="380" y="2306" text-anchor="middle" class="small">固定</text>
+  <rect x="520" y="2286" width="280" height="30" class="node neutral-box"/>
+  <text x="660" y="2306" text-anchor="middle" class="small">可切换 vector/bm25/hybrid</text>
+
+  <!-- 行5: 权重 -->
+  <rect x="100" y="2316" width="140" height="30" class="node neutral-box"/>
+  <text x="170" y="2336" text-anchor="middle" class="small">权重配置</text>
+  <rect x="240" y="2316" width="280" height="30" class="node neutral-box"/>
+  <text x="380" y="2336" text-anchor="middle" class="small">❌ 无</text>
+  <rect x="520" y="2316" width="280" height="30" class="node neutral-box"/>
+  <text x="660" y="2336" text-anchor="middle" class="small">可调 vector/bm25 权重</text>
+
+  <!-- 行6: 模型 -->
+  <rect x="100" y="2346" width="140" height="30" class="node neutral-box"/>
+  <text x="170" y="2366" text-anchor="middle" class="small">模型数量</text>
+  <rect x="240" y="2346" width="280" height="30" class="node neutral-box"/>
+  <text x="380" y="2366" text-anchor="middle" class="small">1个 (bge-m3)</text>
+  <rect x="520" y="2346" width="280" height="30" class="node neutral-box"/>
+  <text x="660" y="2366" text-anchor="middle" class="small">2个 (+ bge-reranker)</text>
+
+  <!-- 行7: 文件 -->
+  <rect x="100" y="2376" width="140" height="30" class="node neutral-box"/>
+  <text x="170" y="2396" text-anchor="middle" class="small">文件结构</text>
+  <rect x="240" y="2376" width="280" height="30" class="node neutral-box"/>
+  <text x="380" y="2396" text-anchor="middle" class="small">分离 (多个文件)</text>
+  <rect x="520" y="2376" width="280" height="30" class="node neutral-box"/>
+  <text x="660" y="2396" text-anchor="middle" class="small">合并 (llm/models/search.py)</text>
+
+</svg>
+</main>
