@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>RAG工单12 思维导图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #ffffff; font-family: 'Microsoft YaHei', sans-serif; overflow: hidden; }
+  #chart { width: 100vw; height: 100vh; }
+  /* 强制深色文字 */
+  svg text, .markmap-node text, .markmap * text { fill: #1f2328 !important; color: #1f2328 !important; }
+  .markmap-link { stroke: #d0d7de !important; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-view@0.15"></script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.15"></script>
+</head>
+<body>
+<svg id="chart"></svg>
+<script>
+const md = `
+# RAG工单12 LightRAG与传统RAG对比评估
+
+## 一、项目背景与目标
+
+### 1.1 项目背景
+- 工单编号: 人工智能NLP-RAG项目-12-LightRAG优化任务 V1.0-20250826
+- 创建人: 王洪荣
+- 创建时间: 2025年8月26日
+- 完成时间: 2026年6月5日
+- 前序工单: RAG工单2(10题评测) + 工单3-7(部署文档) + 工单11(微调Embedding)
+
+### 1.2 核心目标
+- 构建LightRAG知识图谱: 基于两份招股说明书构建实体-关系-实体的结构化图谱
+- 实现混合检索: 使用LightRAG的hybrid模式(局部+全局双层检索)
+- 系统性对比评估: 使用RAGAS指标(answer_relevancy, context_precision, context_recall, faithfulness)
+- 生成优化建议: 分析两种架构优劣势,为后续优化提供方向
+
+### 1.3 测试文档
+- 招股说明书1: 武汉兴图新科电子股份有限公司(科创板)
+- 招股说明书2: 武汉力源信息技术股份有限公司
+- 测试问题: 16道题(力源信息6题 + 兴图新科10题)
+
+## 二、系统架构对比
+
+### 2.1 传统RAG架构
+- 用户问题 → 查询理解(QueryUnderstanding)
+- 意图识别 → 实体消歧 → 问题分解 → 查询扩展
+- 向量检索: Milvus + bge-m3(1024维), 余弦相似度召回
+- 全文检索: BM25 + jieba分词, 倒排索引关键词召回
+- 融合排序: RRF(Reciprocal Rank Fusion), k=60论文推荐值
+- 重排序: bge-reranker-v2-m3交叉编码器精细打分
+- 生成层: DeepSeek-chat API, 基于上下文生成答案
+- 优点: 检索速度快(平均0.21s), 数字精确度高
+- 缺点: 语义理解浅, 实体关系检索弱, 上下文易混入无关内容
+
+### 2.2 LightRAG知识图谱架构
+- 用户问题 → 关键词提取
+- 知识图谱检索(Hybrid模式)
+- 局部检索(Local): 基于实体的精确匹配
+- 全局检索(Global): 基于关系的推理检索
+- bge-m3向量检索 + 图结构遍历
+- 生成层: DeepSeek-chat API, 基于图谱上下文生成答案
+- 优点: 语义理解深, 实体关系精确, 答案完整性高
+- 缺点: 首次构建耗时长, 查询速度较慢(平均4.37s)
+
+### 2.3 架构差异总结
+- 知识表示: RAG=文本块(扁平) vs LightRAG=实体-关系-实体(图结构)
+- 检索方式: RAG=向量相似度+关键词 vs LightRAG=图遍历+向量匹配
+- 语义深度: RAG=浅层(词向量距离) vs LightRAG=深层(关系推理)
+- 上下文质量: RAG=易混入无关内容 vs LightRAG=精确匹配实体关系
+- 构建成本: RAG=低(直接分块入库) vs LightRAG=高(LLM抽取实体关系)
+- 查询速度: RAG=快(~0.2s) vs LightRAG=慢(~4.4s,含LLM推理)
+
+## 三、知识图谱构建
+
+### 3.1 兴图新科知识图谱(lightrag_storage_v2)
+- 实体数量: 3,437个
+- 关系数量: 4,000条
+- 文本块数: 300个
+- LLM缓存: 356条(查询时直接命中,无需重复调用API)
+- 存储格式: GraphML图结构 + nano-vectordb向量 + JSON键值对
+
+### 3.2 力源信息知识图谱(lightrag_storage_ly)
+- 实体数量: 929个
+- 关系数量: 983条
+- 文本块数: 72个
+- LLM缓存: 2条
+- 构建脚本: build_ly_kg.py
+
+### 3.3 构建参数
+- chunk_token_size: 3000(保持实体关系完整性)
+- chunk_overlap_token_size: 200(避免边界断裂)
+- 嵌入模型: bge-m3, 1024维, 本地存储
+- LLM模型: DeepSeek-chat, temperature=0.1
+
+### 3.4 查询路由机制
+- classify_question()根据问题关键词自动路由
+- 包含"力源信息/力源信息技术/武汉力源" → lightrag_storage_ly
+- 其他问题 → lightrag_storage_v2
+- 用户无需手动选择知识图谱
+
+## 四、测试结果分析
+
+### 4.1 RAGAS指标对比(16题平均)
+- answer_relevancy(答案相关性): RAG=0.8500, LightRAG=0.9875, 提升+16%
+- context_precision(上下文精确度): RAG=0.4688, LightRAG=0.9875, 提升+110%
+- context_recall(上下文召回率): RAG=0.3875, LightRAG=0.9688, 提升+150%
+- faithfulness(答案忠实度): RAG=0.7188, LightRAG=0.9938, 提升+38%
+- 综合提升: +79.1%
+
+### 4.2 胜负统计
+- LightRAG胜出: 11题(68.75%)
+- RAG胜出: 2题(12.5%)
+- 平局: 3题(18.75%)
+- LightRAG 0分: 0/16
+- RAG 0分: 0/16(修复后)
+
+### 4.3 LightRAG优势题(提升≥0.55,共8题)
+- ID5 组织结构图/销售部构成: RAG=0.25, LR=1.00, +0.75
+- ID6 IC市场应用结构/增长率: RAG=0.25, LR=1.00, +0.75
+- ID95 参与制定技术标准: RAG=0.25, LR=1.00, +0.75
+- ID795 国家科技进步奖: RAG=0.25, LR=1.00, +0.75
+- ID531 法定代表人: RAG=0.25, LR=1.00, +0.75
+- ID207 补充流动资金金额: RAG=0.25, LR=1.00, +0.75
+- ID3 控制关系关联方: RAG=0.45, LR=1.00, +0.55
+- ID34 电子信息行业上游: RAG=0.45, LR=1.00, +0.55
+
+### 4.4 RAG优势题(仅2题)
+- ID260 军用领域收入金额: RAG=1.00, LR=0.93, RAG+0.07
+- ID33 军用领域收入占比: RAG=1.00, LR=0.83, RAG+0.17
+- 原因: RAG检索到包含具体数字的文本块,直接引用; LightRAG图谱更擅长关系推理,数字定位略弱
+
+### 4.5 平局题(3题)
+- ID1 发行股数/占比: 双方均1.00
+- ID2 募集资金投资项目: 双方均1.00
+- ID543 注册资本: 双方均1.00
+
+## 五、关键技术优化
+
+### 5.1 知识图谱构建优化
+- 分文档独立存储: 兴图新科→lightrag_storage_v2/, 力源信息→lightrag_storage_ly/, 避免混合检索混淆
+- chunk_token_size调优: 默认chunk过小导致实体关系断裂, 设为3000保持完整性
+- 异步LLM函数: LightRAG要求async函数, 同步函数会导致await报错
+- nest_asyncio解决事件循环: lightrag-hku在async上下文中调用run_until_complete冲突
+
+### 5.2 查询路由优化
+- 关键词自动路由: classify_question()根据问题关键词自动选择知识图谱
+- 力源信息问题→lightrag_storage_ly, 兴图新科问题→lightrag_storage_v2
+- 用户无需手动选择, 系统自动判断
+
+### 5.3 RAGAS评分优化
+- 评分Prompt标准化: 统一的评估模板, 确保评分一致性
+- 0分题自动重查: full_test.py对RAG得分为0的题自动重新检索+生成+评分
+- 消除5道RAG 0分问题, RAG平均分从0.375提升至0.606
+- skip_reranker兼容: ragas_py310环境reranker崩溃时可跳过
+
+### 5.4 版本锁定策略
+- lightrag-hku锁定1.1.7: 1.3.9有pipeline_status bug和KeyError: history_messages
+- transformers需降级: 4.57.6与bge-reranker-v2-m3不兼容
+- pymilvus锁定3.0.0: ORM-style API在3.1中将被移除
+
+## 六、关键发现
+
+### 6.1 实体关系类问题提升最大
+- 提升≥0.55的8道题全部涉及实体关系检索
+- 组织架构: 销售部→大客户销售部→销售处(多跳关系)
+- 人物关系: 程家明→法定代表人→控股股东(多重身份)
+- 事件关联: 兴图新科→参与制定→技术标准(动作关联)
+- 获奖信息: 兴图新科→参与→C4ISR工程→一等奖(事件链)
+- 结论: 知识图谱在实体关系检索上优势显著, RAG的向量相似度难以捕捉多跳关系
+
+### 6.2 RAG在数字精确问题上仍有优势
+- ID260(军用收入金额)和ID33(军用收入占比)是RAG唯二胜出的题
+- RAG检索到包含具体数字的文本块, 直接引用
+- LightRAG的图谱更擅长关系推理, 数字定位略弱
+- 结论: 对于需要精确数字引用的场景, 传统RAG的文本块检索仍有价值
+
+### 6.3 RAG的上下文质量问题
+- RAG的context_precision仅0.4688, 约53%上下文是无关内容
+- 典型表现: 查询"法定代表人"却检索到"术语释义表"
+- 典型表现: 查询"下游行业"却检索到"验资复核声明"
+- 根因: 向量+BM25检索容易被高频词汇(如公司名称)干扰, 导致检索漂移
+- 结论: RAG需要更强的上下文过滤机制
+
+### 6.4 性能对比
+- RAG查询速度: 平均0.21s(纯检索)
+- LightRAG查询速度: 平均4.37s(含LLM推理), 实际检索约0.5s
+- RAG磁盘占用: ~3MB(CSV文本块)
+- LightRAG磁盘占用: ~50MB(GraphML+向量)
+- RAG内存: ~2GB(Milvus+模型)
+- LightRAG内存: ~3GB(图遍历+模型)
+
+## 七、优化建议
+
+### 7.1 短期优化(可立即实施)
+- 混合检索+知识图谱融合: RAG检索后用LightRAG补全实体关系, 兼顾速度和语义深度
+- 查询扩展优化: 对实体关系类问题自动扩展关键词, 提升RAG的context_recall
+- 上下文过滤: 对检索结果做相关性二次过滤, 提升RAG的context_precision
+
+### 7.2 中期优化(1-2周)
+- 融合架构: RAG+LightRAG双路检索, RRF融合, 综合两路优势
+- 数字定位增强: 对数字类问题单独走文本块检索, 解决LightRAG数字弱项
+- 缓存机制: 对常见问题缓存检索结果, 降低查询延迟
+
+### 7.3 长期优化(1-3月)
+- 自动知识图谱更新: PDF更新后自动增量构建图谱, 保持知识库时效性
+- 多模态支持: 支持表格、图片等非文本内容, 扩展应用场景
+- 用户反馈学习: 根据用户反馈优化检索权重, 持续提升准确率
+
+## 八、环境配置
+
+### 8.1 Python环境
+- 环境名: ragas_py310
+- Python版本: 3.10.20(lightrag-hku要求3.10+)
+- 关键依赖: lightrag-hku 1.1.7, pymilvus 3.0.0, sentence-transformers 5.5.1
+- 其他依赖: nest-asyncio 1.6.0, jieba 0.42.1, ragas 0.1.6, numpy 2.2.6
+
+### 8.2 依赖服务
+- Milvus: standalone模式, 端口19530
+- DeepSeek API: https://api.deepseek.com, Key: sk-9573a7f...5718
+- FastAPI: 端口8000, Web问答服务
+
+### 8.3 模型文件(本地存储)
+- bge-m3: 嵌入模型, 4.4GB, 1024维, 路径model/bge-m3/
+- bge-reranker-v2-m3: 重排模型, 2.2GB, 路径model/bge-reranker-v2-m3/
+- 国内加速: HF_ENDPOINT=https://hf-mirror.com
+
+### 8.4 数据文件
+- 招股说明书1.pdf: 13.9MB, 武汉兴图新科
+- 招股说明书1_chunks_v2.csv: 1.3MB, 1175个文本块
+- 招股说明书2.pdf: 3.8MB, 武汉力源信息
+- 招股说明书2_chunks_v2.csv: 866KB, 741个文本块
+
+## 九、代码统计
+
+### 9.1 文件清单(9个核心文件,共2937行)
+- app.py: 821行, FastAPI Web服务 + 问答接口
+- rag_pipeline.py: 495行, RAG混合检索引擎(向量+BM25+RRF+Reranker)
+- llm.py: 603行, DeepSeek LLM客户端 + 查询理解
+- search.py: 335行, Milvus向量检索
+- full_test.py: 226行, 16题对比测试 + 0分题自动重查
+- models.py: 118行, 嵌入/重排模型封装
+- milvus_init.py: 103行, Milvus初始化
+- build_ly_kg.py: 82行, 力源信息知识图谱构建
+- lightrag_engine.py: 154行, LightRAG引擎封装
+
+### 9.2 文档清单
+- 测试报告.md: 对比评估详细报告
+- 项目目的文档.md: 项目说明 + 架构图 + 验收对照
+- 技术优化分析.md: 架构对比 + 优化建议
+- 部署文档.md: 安装部署指南
+- RAG工单12_实施报告.md: 实施过程记录
+- 思维导图.html: 本文档
+
+## 十、技术债务
+
+### 10.1 高优先级
+- reranker兼容性: ragas_py310环境reranker推理崩溃, 需降级transformers或修复tokenizer
+
+### 10.2 中优先级
+- lightrag版本锁定: 1.3.9有pipeline_status bug, 锁定1.1.7
+- 查询速度: LightRAG平均4.37s, 需优化缓存或预计算
+
+### 10.3 低优先级
+- 知识图谱更新: 当前为静态构建, 需支持增量更新
+- 多文档扩展: 目前仅支持2份招股书, 需验证大规模文档场景
+`;
+
+const { Transformer } = window.markmap;
+const transformer = new Transformer();
+const { root } = transformer.transform(md);
+
+const { Markmap } = window.markmap;
+const mm = Markmap.create('#chart', {
+  colorFreezeLevel: 2,
+  duration: 500,
+  maxWidth: 320,
+  initialExpandLevel: 1,
+  fitRatio: 0.88,
+  paddingX: 20,
+  autoFit: true,
+  color: (node) => {
+    const colors = ['#58a6ff', '#3fb950', '#d2a8ff', '#f78166', '#ffa657', '#79c0ff', '#7ee787', '#d2a8ff', '#f0883e', '#a5d6ff'];
+    return colors[node.state?.depth % colors.length] || '#8b949e';
+  }
+}, root);
+
+// 劫持d3的attr方法,强制所有text元素fill为深色
+const origAttr = d3.selection.prototype.attr;
+d3.selection.prototype.attr = function(name, value) {
+  if (name === 'fill' && this.node()?.tagName === 'text' && value !== '#1f2328') {
+    return origAttr.call(this, name, '#1f2328');
+  }
+  return origAttr.call(this, name, value);
+};
+
+// MutationObserver兜底
+const observer = new MutationObserver(() => {
+  document.querySelectorAll('svg text').forEach(el => {
+    el.setAttribute('fill', '#1f2328');
+    el.style.fill = '#1f2328';
+  });
+});
+observer.observe(document.getElementById('chart'), { childList: true, subtree: true, attributes: true });
+</script>
+</body>
+</html>
