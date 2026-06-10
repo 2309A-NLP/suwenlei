@@ -1,0 +1,648 @@
+{
+  "total": 201,
+  "correct": 113,
+  "accuracy": 0.5621890547263682,
+  "bleu_avg": 0.5621890547263682,
+  "rouge_l_avg": 0.5621890547263682,
+  "term_total": 44,
+  "term_correct": 30,
+  "term_accuracy": 0.6818181818181818,
+  "diagram_total": 134,
+  "diagram_correct": 52,
+  "diagram_accuracy": 0.3880597014925373,
+  "group_stats": {
+    "1": {
+      "total": 67,
+      "correct": 61,
+      "accuracy": 0.9104477611940298
+    },
+    "2": {
+      "total": 67,
+      "correct": 22,
+      "accuracy": 0.3283582089552239
+    },
+    "3": {
+      "total": 67,
+      "correct": 30,
+      "accuracy": 0.44776119402985076
+    }
+  },
+  "errors": [
+    {
+      "question": "根据文件中第5页的示意图，一次除尘器（10）之后连接的设备是什么？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN202390368U.pdf"
+    },
+    {
+      "question": "在文件中第8页的示意图中，压缩空气如果从编号3的部件流入，经过编号6部件后，下一步会流入哪个部件？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN2932258Y.pdf"
+    },
+    {
+      "question": "根据文件中第7页的图片，编号为12的部件位于哪个部件的下方？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN211562248U.pdf"
+    },
+    {
+      "question": "在文件中第8页的砂光装置示意图中，如果需要调节砂带(5)的松紧度，应该参考哪个部件的位置变化？",
+      "predicted": "A",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN213225575U.pdf"
+    },
+    {
+      "question": "根据文件中第6页图示，空气在经过干燥装置后，接下来会经过哪个部件？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN211385412U.pdf"
+    },
+    {
+      "question": "在文件中第7页提供的装置图片中，编号为3的部件相对于编号为5的部件的位置关系是？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN213392736U.pdf"
+    },
+    {
+      "question": "参考文件中第6页的电路图，如果与门U3的两个输入端都为高电平，那么VDC-START端为高电平，此时U5的另一个输入端如果为低电平，那么IDC-TRIP端的电平状态是什么？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN211826406U.pdf"
+    },
+    {
+      "question": "在文件中第7页的示意图中，真空破泡机构（2）位于哪个部件的上方？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN202213116U.pdf"
+    },
+    {
+      "question": "在文件中第8页的图中，编号为22的部件位于哪个部件的正下方？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN215832503U.pdf"
+    },
+    {
+      "question": "结合文件中第5页的示意图，当零件盒挂在百叶挂板上时，为了方便取放物品，哪个结构起到了关键作用？",
+      "predicted": "D",
+      "reference": "C",
+      "group": 3,
+      "doc": "CN2487698Y.pdf"
+    },
+    {
+      "question": "基于文件中第5页的示意图，如果需要手持该装置，最方便的位置是哪个部件？",
+      "predicted": "D",
+      "reference": "C",
+      "group": 3,
+      "doc": "CN217479855U.pdf"
+    },
+    {
+      "question": "在文件中第6页的图中，编号为8的部件相对于编号为2的部件的位置关系是？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN211202212U.pdf"
+    },
+    {
+      "question": "参考文件中第5页的示意图，从压水口(3)到加压区(7)的路径中，必须经过的U型减震降噪槽的顺序是什么？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN211449001U.pdf"
+    },
+    {
+      "question": "根据文件中第7页的示意图，如果高压水从编号1的高压进水口进入，经过第三通道后，接下来会进入哪个通道？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN113037015B.pdf"
+    },
+    {
+      "question": "在文件中第10页的图片中，哪个部件位于框架(21)的上部？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN2473163Y.pdf"
+    },
+    {
+      "question": "根据文件中第6页的图片和专利描述，如果动力件（31）失效，定位柱（32）将无法正常工作，那么以下哪个操作会受到直接影响？",
+      "predicted": "B",
+      "reference": "D",
+      "group": 3,
+      "doc": "CN214291541U.pdf"
+    },
+    {
+      "question": "如果文件中第7页的基材料带5的温度需要通过助燃风机41来进行调节，那么燃气需要经过哪些步骤来实现该调节？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN214052396U.pdf"
+    },
+    {
+      "question": "在文件中第5页的图片中，编号为5的部件位于哪个部件之上？",
+      "predicted": "D",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN213444668U.pdf"
+    },
+    {
+      "question": "参考文件中第7页的图片，哪个部件位于扇叶(6)的正上方？",
+      "predicted": "B",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN211674871U.pdf"
+    },
+    {
+      "question": "基于文件中第6页的图片，编号4的部件相对于编号6的部件的位置关系是？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN211563324U.pdf"
+    },
+    {
+      "question": "根据文件中第5页提供的图片，如果想要将该装置固定在楼板上，主要利用的是哪个部件的特性？",
+      "predicted": "B",
+      "reference": "D",
+      "group": 3,
+      "doc": "CN202651702U.pdf"
+    },
+    {
+      "question": "根据文件中第7页的示意图，哪个部件位于吸料管（编号10）的正下方？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN202244826U.pdf"
+    },
+    {
+      "question": "在文件中第7页的示意图中，编号为4的部件是什么?",
+      "predicted": "D",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN215580174U.pdf"
+    },
+    {
+      "question": "根据文件中第8页的图片，螺杆（14）贯穿横杆（17）的螺孔（18）并连接支撑架（9），如果螺杆（14）顺时针转动，且螺纹为常见类型，那么支撑架（9）相对于横杆（17）的位置变化是什么？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN213467122U.pdf"
+    },
+    {
+      "question": "在文件中第6页的图片中，滑块(3)相对于放置盒(4)的位置是什么？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN214300409U.pdf"
+    },
+    {
+      "question": "根据专利文本，以下哪个部件的主要功能是提高夹持的稳定性，并扩大夹持尺寸的范围？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 1,
+      "doc": "CN211387750U.pdf"
+    },
+    {
+      "question": "在文件中第5页的示意图中，哪个部件直接连接了高压水管（5）和导水杆（7）?",
+      "predicted": "B",
+      "reference": "C",
+      "group": 3,
+      "doc": "CN202555525U.pdf"
+    },
+    {
+      "question": "根据文件中第7页图示，如果需要抬升物件，物件放置于承载框（31）上，并通过固定架(11)固定，那么钢索(9)通过哪个部件与升降平台(3)连接？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN217201855U.pdf"
+    },
+    {
+      "question": "根据文件中第7页的示意图，如果自动化物流装卸运输车要对接物料装卸点，哪个部件先与地面接触？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN102774310A.pdf"
+    },
+    {
+      "question": "根据文件中第6页的图片，编号131的部件在编号13的部件中的位置是什么？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN102159017A.pdf"
+    },
+    {
+      "question": "在文件中第6页提供的图片中，编号为5的部件相对于编号为1的部件的位置是？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN213258008U.pdf"
+    },
+    {
+      "question": "在文件中第5页的图片中，编号1052的部件相对于编号106的部件位于什么位置？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN202278817U.pdf"
+    },
+    {
+      "question": "在文件中第7页提供的绕线机图片中，编号为42的部件相对于编号为44的部件的位置关系是什么？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN216511924U.pdf"
+    },
+    {
+      "question": "在文件中第9页的示意图中，哪个部件位于电磁阀的上方且直接连接？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN202789469U.pdf"
+    },
+    {
+      "question": "在文件中第5页的示意图中，如果部件1用于支撑拖链，那么支撑拖链的部件下方是哪个部件？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN202779194U.pdf"
+    },
+    {
+      "question": "参考文件中第7页的图片，水箱19与哪个部件直接相连？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN214020110U.pdf"
+    },
+    {
+      "question": "根据专利文本，为了确保球型电荷放射器的电荷放射功能，采用涂饰处理时，应该如何操作？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 1,
+      "doc": "CN202797609U.pdf"
+    },
+    {
+      "question": "本发明中，哪个部件通过连接刮渣支架来调节刮板的高度？",
+      "predicted": "A",
+      "reference": "C",
+      "group": 1,
+      "doc": "CN103505918A.pdf"
+    },
+    {
+      "question": "在文件中第15页的示意图中，编号16的部件相对于编号12X的部件的位置是什么？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN101668862B.pdf"
+    },
+    {
+      "question": "在文件中第5页的图片中，编号为5的部件相对于编号为3的部件的位置描述正确的是？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN201711107U.pdf"
+    },
+    {
+      "question": "根据文件中第6页的示意图，如果需要调节夹杆的水平位置，首先需要启动哪个部件，然后才能带动编号5的部件运动？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN218453944U.pdf"
+    },
+    {
+      "question": "在文件中第6页的示意图中，编号为9的部件相对于编号为11的部件的位置关系是：",
+      "predicted": "B",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN213681400U.pdf"
+    },
+    {
+      "question": "根据文件中第6页图示，如果想要使滑套(1)下降，需要操作哪个部件，这个部件与哪个部件直接相连并传递动力？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN214274052U.pdf"
+    },
+    {
+      "question": "根据文件中第7页的示意图，线缆经过送线器(2)后，接下来会经过哪个部件？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 3,
+      "doc": "CN216511924U.pdf"
+    },
+    {
+      "question": "参考文件中第9页图片(a)，部件2相对于部件21的位置关系是？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN101456278A.pdf"
+    },
+    {
+      "question": "参考文件中第5页的示意图，部件8位于哪个部件的内部？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN217479855U.pdf"
+    },
+    {
+      "question": "观察文件中第7页的图片，部件4和部件6位于部件2的什么位置？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN218266510U.pdf"
+    },
+    {
+      "question": "在文件中第24页提供的图片中，编号为36的部件相对于热交换盘管28的位置关系是什么？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN102083298B.pdf"
+    },
+    {
+      "question": "在文件中第12页图2中，哪个编号指向外管？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN1036856C.pdf"
+    },
+    {
+      "question": "根据文件中第7页图示，如果要增强灯头盒与混凝土的连接强度，哪个部件起到了关键作用？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN216280866U.pdf"
+    },
+    {
+      "question": "在文件中第6页提供的装置图片中，部件“11”相对于部件“15”的位置关系是什么？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN211318081U.pdf"
+    },
+    {
+      "question": "在文件中第7页的图中，编号为6的部件相对于编号为5的部件的位置关系是什么？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN211715351U.pdf"
+    },
+    {
+      "question": "在文件中第6页的图1中，相对于上料箱（3），上料漏斗（6）的位置关系是怎样的？",
+      "predicted": "A",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN211937133U.pdf"
+    },
+    {
+      "question": "参考文件中第5页的图片，部件7相对于部件6的位置关系是什么？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN213177203U.pdf"
+    },
+    {
+      "question": "根据文件中第7页的示意图，如果放置台（10）上升，最先接触到橡胶本体（14）的是哪个部件？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN213337642U.pdf"
+    },
+    {
+      "question": "在文件中第6页的图1中，如果18号部件开始转动，最先受到影响开始运动的部件是哪个？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 3,
+      "doc": "CN212355585U.pdf"
+    },
+    {
+      "question": "在文件中第6页的图中，编号为5的部件位于哪个部件的末端？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN216159042U.pdf"
+    },
+    {
+      "question": "参考文件中第7页的示意图，如果需要调整花轮（12）的位置，可以调整哪个部件？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 3,
+      "doc": "CN111590871A.pdf"
+    },
+    {
+      "question": "根据文件中第6页图示，部件91与部件93直接相连，如果部件91发生故障，可能会直接影响哪个部件的运作？",
+      "predicted": "B",
+      "reference": "D",
+      "group": 3,
+      "doc": "CN211442941U.pdf"
+    },
+    {
+      "question": "根据文件中第10页图3，从(1)到(4)的步骤中，上腔室组件经历了什么变化？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 3,
+      "doc": "CN101178500B.pdf"
+    },
+    {
+      "question": "在文件中第7页的示意图中，双目相机相对于工控机处理模块的位置是什么？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN215924291U.pdf"
+    },
+    {
+      "question": "在文件中第6页提供的图片中，控制面板(11)位于哪个部件的附近？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN211359328U.pdf"
+    },
+    {
+      "question": "基于文件中第6页的图片，如果需要更换第一过滤网(5)，需要旋出哪个部件才能进行更换？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN214958012U.pdf"
+    },
+    {
+      "question": "根据文件中第6页图片，如果冲头（编号4）向下运动，首先接触到的部件最可能是哪个？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN217226822U.pdf"
+    },
+    {
+      "question": "根据专利文本，以下哪个描述符合本实用新型的有益效果？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 1,
+      "doc": "CN212384434U.pdf"
+    },
+    {
+      "question": "在文件中第7页提供的图片中，部件9（下层激光器）相对于部件4（上层激光器）的位置关系是？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN111976305A.pdf"
+    },
+    {
+      "question": "观察文件中第6页的图片，如果需要调节底板的水平，首先操作哪个部件，然后哪个部件会发生移动？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN211318081U.pdf"
+    },
+    {
+      "question": "根据专利文本，以下哪个操作不在自动点弹波胶操作之前进行？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 1,
+      "doc": "CN110234055B.pdf"
+    },
+    {
+      "question": "根据文件中第8页的图片，部件72相对于部件84的位置关系是？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN103433750A.pdf"
+    },
+    {
+      "question": "根据文件中第10页图片4，如果螺纹杆(11)向下移动，那么第一夹块(16)会如何运动？",
+      "predicted": "A",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN110631787A.pdf"
+    },
+    {
+      "question": "在文件中第9页提供的图片中，编号为25的部件相对于编号为24的部件的位置关系是？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN101890709B.pdf"
+    },
+    {
+      "question": "根据文件中第10页提供的图片，要访问“设备安装维保溯源子模块”的功能，需要先进入哪个模块？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN111046557B.pdf"
+    },
+    {
+      "question": "在文件中第5页的示意图中，如果物料需要排出系统，会依次经过哪些部件？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN214388960U.pdf"
+    },
+    {
+      "question": "在文件中第5页的示意图中，编号为15的部件相对于编号为3的部件的位置关系是什么？",
+      "predicted": "B",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN216510747U.pdf"
+    },
+    {
+      "question": "根据文件中第6页的图片，压条(编号5)的上方是什么部件？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN218488175U.pdf"
+    },
+    {
+      "question": "根据文件中第7页的图片，如果需要调整装卸平台4的高度，最直接相关的是哪个部件的动作？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 3,
+      "doc": "CN212245420U.pdf"
+    },
+    {
+      "question": "在文件中第6页提供的图片中，编号为3的部件相对于编号为1的部件的位置描述正确的是？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN214611151U.pdf"
+    },
+    {
+      "question": "在文件中第6页的示意图中，编号为5的部件相对于编号为4的部件的位置关系是？",
+      "predicted": "A",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN216687092U.pdf"
+    },
+    {
+      "question": "在文件中第5页的图中，编号为5的部件相对于编号为1的部件的位置是什么？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN213263508U.pdf"
+    },
+    {
+      "question": "在文件中第5页提供的图片中，如果传输带（2）顺时针转动，盒子将会朝哪个方向移动？",
+      "predicted": "B",
+      "reference": "D",
+      "group": 3,
+      "doc": "CN216806036U.pdf"
+    },
+    {
+      "question": "在文件中第9页的流程图中，编号为101的步骤相对于编号为100的步骤的位置是什么？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN108137180B.pdf"
+    },
+    {
+      "question": "观察文件中第7页的图片，编号为500的部件相对于编号为700的部件的位置关系是？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN218376910U.pdf"
+    },
+    {
+      "question": "观察文件中第8页图片，推拉式夹钳91通过哪个部件直接与夹钳连接块916相连？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN213731417U.pdf"
+    },
+    {
+      "question": "在文件中第7页提供的图片3中，编号为103的部件的名称是什么？",
+      "predicted": "A",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN110864395A.pdf"
+    },
+    {
+      "question": "根据专利文本，以下哪种方法最适合用于处理采用本方法生产生铁水或钢水预产品和海绵铁过程中产生的沉渣？",
+      "predicted": "A",
+      "reference": "C",
+      "group": 1,
+      "doc": "CN1068055C.pdf"
+    },
+    {
+      "question": "在文件中第9页的系统架构图中，“信息推送模块”相对于“进度追踪模块”的位置关系是什么？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN110717736A.pdf"
+    },
+    {
+      "question": "在文件中第7页提供的图片中，编号为31的部件相对于编号为3的部件的位置描述正确的是？",
+      "predicted": "D",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN212491849U.pdf"
+    },
+    {
+      "question": "在文件中第8页的图中，部件3相对于部件1的位置关系是什么？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN2519793Y.pdf"
+    }
+  ]
+}

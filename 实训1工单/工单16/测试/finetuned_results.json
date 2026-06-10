@@ -1,0 +1,235 @@
+{
+  "total": 201,
+  "correct": 172,
+  "accuracy": 0.8557213930348259,
+  "bleu_avg": 0.8557213930348259,
+  "rouge_l_avg": 0.8557213930348259,
+  "term_total": 44,
+  "term_correct": 41,
+  "term_accuracy": 0.9318181818181818,
+  "diagram_total": 134,
+  "diagram_correct": 106,
+  "diagram_accuracy": 0.7910447761194029,
+  "group_stats": {
+    "1": {
+      "total": 67,
+      "correct": 66,
+      "accuracy": 0.9850746268656716
+    },
+    "2": {
+      "total": 67,
+      "correct": 49,
+      "accuracy": 0.7313432835820896
+    },
+    "3": {
+      "total": 67,
+      "correct": 57,
+      "accuracy": 0.8507462686567164
+    }
+  },
+  "errors": [
+    {
+      "question": "在文件中第7页的示意图中，部件9相对于部件7的位置关系是什么？",
+      "predicted": "A",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN213657597U.pdf"
+    },
+    {
+      "question": "在文件中第8页的砂光装置示意图中，如果需要调节砂带(5)的松紧度，应该参考哪个部件的位置变化？",
+      "predicted": "A",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN213225575U.pdf"
+    },
+    {
+      "question": "根据文件中第6页图示，空气在经过干燥装置后，接下来会经过哪个部件？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN211385412U.pdf"
+    },
+    {
+      "question": "参考文件中第6页的电路图，如果与门U3的两个输入端都为高电平，那么VDC-START端为高电平，此时U5的另一个输入端如果为低电平，那么IDC-TRIP端的电平状态是什么？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN211826406U.pdf"
+    },
+    {
+      "question": "在文件中第8页的图中，编号为22的部件位于哪个部件的正下方？",
+      "predicted": "C",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN215832503U.pdf"
+    },
+    {
+      "question": "在文件中第6页的图中，编号为8的部件相对于编号为2的部件的位置关系是？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN211202212U.pdf"
+    },
+    {
+      "question": "如果文件中第7页的基材料带5的温度需要通过助燃风机41来进行调节，那么燃气需要经过哪些步骤来实现该调节？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN214052396U.pdf"
+    },
+    {
+      "question": "在文件中第5页的图中，部件9相对于部件2的位置关系是什么？",
+      "predicted": "A",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN201711125U.pdf"
+    },
+    {
+      "question": "在文件中第6页提供的图片中，编号为5的部件相对于编号为1的部件的位置是？",
+      "predicted": "A",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN213258008U.pdf"
+    },
+    {
+      "question": "在文件中第5页的图片中，编号1052的部件相对于编号106的部件位于什么位置？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN202278817U.pdf"
+    },
+    {
+      "question": "在文件中第7页提供的绕线机图片中，编号为42的部件相对于编号为44的部件的位置关系是什么？",
+      "predicted": "A",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN216511924U.pdf"
+    },
+    {
+      "question": "在文件中第9页的示意图中，哪个部件位于电磁阀的上方且直接连接？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN202789469U.pdf"
+    },
+    {
+      "question": "在文件中第15页的示意图中，编号16的部件相对于编号12X的部件的位置是什么？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN101668862B.pdf"
+    },
+    {
+      "question": "根据文件中第7页的示意图，线缆经过送线器(2)后，接下来会经过哪个部件？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 3,
+      "doc": "CN216511924U.pdf"
+    },
+    {
+      "question": "在文件中第5页的示意图中，编号为11的部件相对于编号为12的部件的位置是什么？",
+      "predicted": "A",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN112012329A.pdf"
+    },
+    {
+      "question": "观察文件中第7页的图片，部件4和部件6位于部件2的什么位置？",
+      "predicted": "B",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN218266510U.pdf"
+    },
+    {
+      "question": "在文件中第24页提供的图片中，编号为36的部件相对于热交换盘管28的位置关系是什么？",
+      "predicted": "D",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN102083298B.pdf"
+    },
+    {
+      "question": "参考文件中第5页的图片，部件7相对于部件6的位置关系是什么？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN213177203U.pdf"
+    },
+    {
+      "question": "根据文件中第7页的示意图，如果放置台（10）上升，最先接触到橡胶本体（14）的是哪个部件？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN213337642U.pdf"
+    },
+    {
+      "question": "在文件中第6页的图1中，如果18号部件开始转动，最先受到影响开始运动的部件是哪个？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 3,
+      "doc": "CN212355585U.pdf"
+    },
+    {
+      "question": "根据文件中第6页图片，如果冲头（编号4）向下运动，首先接触到的部件最可能是哪个？",
+      "predicted": "D",
+      "reference": "A",
+      "group": 3,
+      "doc": "CN217226822U.pdf"
+    },
+    {
+      "question": "根据专利文本，以下哪个操作不在自动点弹波胶操作之前进行？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 1,
+      "doc": "CN110234055B.pdf"
+    },
+    {
+      "question": "根据文件中第10页提供的图片，要访问“设备安装维保溯源子模块”的功能，需要先进入哪个模块？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 3,
+      "doc": "CN111046557B.pdf"
+    },
+    {
+      "question": "根据文件中第7页的图片，如果需要调整装卸平台4的高度，最直接相关的是哪个部件的动作？",
+      "predicted": "B",
+      "reference": "C",
+      "group": 3,
+      "doc": "CN212245420U.pdf"
+    },
+    {
+      "question": "在文件中第6页提供的图片中，编号为3的部件相对于编号为1的部件的位置描述正确的是？",
+      "predicted": "D",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN214611151U.pdf"
+    },
+    {
+      "question": "在文件中第6页的示意图中，编号为5的部件相对于编号为4的部件的位置关系是？",
+      "predicted": "C",
+      "reference": "D",
+      "group": 2,
+      "doc": "CN216687092U.pdf"
+    },
+    {
+      "question": "在文件中第5页的图中，编号为5的部件相对于编号为1的部件的位置是什么？",
+      "predicted": "B",
+      "reference": "A",
+      "group": 2,
+      "doc": "CN213263508U.pdf"
+    },
+    {
+      "question": "在文件中第9页的流程图中，编号为101的步骤相对于编号为100的步骤的位置是什么？",
+      "predicted": "C",
+      "reference": "B",
+      "group": 2,
+      "doc": "CN108137180B.pdf"
+    },
+    {
+      "question": "在文件中第5页的图中，编号为5的部件相对于编号为7的部件的位置是什么？",
+      "predicted": "A",
+      "reference": "C",
+      "group": 2,
+      "doc": "CN201999480U.pdf"
+    }
+  ]
+}

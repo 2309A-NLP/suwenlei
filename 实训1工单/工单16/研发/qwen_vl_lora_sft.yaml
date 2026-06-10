@@ -1,0 +1,40 @@
+### 模型
+model_name_or_path: Qwen/Qwen-VL-Chat
+
+### 量化（6GB显存必须4bit）
+quantization_bit: 4
+quantization_method: bitsandbytes
+
+### LoRA
+finetuning_type: lora
+lora_target: all
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+
+### 数据
+dataset: imdr_vlm
+template: qwen_vl
+cutoff_len: 512
+overwrite_cache: true
+preprocessing_num_workers: 4
+
+### 训练
+output_dir: /mnt/e/桌面/工单/RAG工单16/output
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+num_train_epochs: 2
+learning_rate: 2.0e-4
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+gradient_checkpointing: true
+
+### 日志
+logging_steps: 10
+save_steps: 500
+save_total_limit: 2
+
+### 其他
+seed: 42
+report_to: none

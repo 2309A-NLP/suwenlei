@@ -1,0 +1,46 @@
+### Qwen2-VL-2B-Instruct LoRA微调配置（autoDL GPU版）
+
+### 模型（autoDL路径）
+model_name_or_path: /root/autodl-tmp/models/Qwen/Qwen2-VL-2B-Instruct
+
+### 量化
+quantization_bit: 4
+quantization_method: bitsandbytes
+
+### LoRA
+finetuning_type: lora
+lora_target: all
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+
+### 数据
+dataset_dir: /root/LLaMA-Factory/data
+dataset: imdr_vlm
+template: qwen2_vl
+cutoff_len: 2048
+overwrite_cache: true
+preprocessing_num_workers: 4
+image_max_pixels: 262144
+image_min_pixels: 3136
+
+### 训练
+output_dir: /root/RAG工单16/output
+per_device_train_batch_size: 4
+gradient_accumulation_steps: 4
+num_train_epochs: 2
+learning_rate: 2.0e-4
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+gradient_checkpointing: true
+max_grad_norm: 1.0
+
+### 日志
+logging_steps: 10
+save_steps: 500
+save_total_limit: 2
+
+### 其他
+seed: 42
+report_to: none
