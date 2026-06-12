@@ -1,0 +1,20 @@
+2026-06-09 21:38:20,312 INFO o.a.j.u.JMeterUtils: Setting Locale to en_EN
+2026-06-09 21:38:20,332 INFO o.a.j.JMeter: Loading user properties from: /mnt/e/jmeter/apache-jmeter-5.6.3/bin/user.properties
+2026-06-09 21:38:20,334 INFO o.a.j.JMeter: Loading system properties from: /mnt/e/jmeter/apache-jmeter-5.6.3/bin/system.properties
+2026-06-09 21:38:20,340 INFO o.a.j.JMeter: Copyright (c) 1998-2024 The Apache Software Foundation
+2026-06-09 21:38:20,340 INFO o.a.j.JMeter: Version 5.6.3
+2026-06-09 21:38:20,341 INFO o.a.j.JMeter: java.version=1.8.0_492
+2026-06-09 21:38:20,341 INFO o.a.j.JMeter: java.vm.name=OpenJDK 64-Bit Server VM
+2026-06-09 21:38:20,341 INFO o.a.j.JMeter: os.name=Linux
+2026-06-09 21:38:20,341 INFO o.a.j.JMeter: os.arch=amd64
+2026-06-09 21:38:20,343 INFO o.a.j.JMeter: os.version=6.6.87.2-microsoft-standard-WSL2
+2026-06-09 21:38:20,343 INFO o.a.j.JMeter: file.encoding=UTF-8
+2026-06-09 21:38:20,343 INFO o.a.j.JMeter: java.awt.headless=null
+2026-06-09 21:38:20,343 INFO o.a.j.JMeter: Max memory     =1073741824
+2026-06-09 21:38:20,343 INFO o.a.j.JMeter: Available Processors =4
+2026-06-09 21:38:20,347 INFO o.a.j.JMeter: Default Locale=English (EN)
+2026-06-09 21:38:20,348 INFO o.a.j.JMeter: JMeter  Locale=English (EN)
+2026-06-09 21:38:20,348 INFO o.a.j.JMeter: JMeterHome=/mnt/e/jmeter/apache-jmeter-5.6.3
+2026-06-09 21:38:20,348 INFO o.a.j.JMeter: user.dir  =/mnt/e/桌面/工单/RAG工单17（最新）
+2026-06-09 21:38:20,349 INFO o.a.j.JMeter: PWD       =/mnt/e/桌面/工单/RAG工单17（最新）
+2026-06-09 21:38:20,349 INFO o.a.j.JMeter: IP: 127.0.1.1 Name: suwenlei FullName: suwenlei.localdomain
