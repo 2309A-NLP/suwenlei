@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭记账本智能体</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        /* 聊天区域 */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 15px;
+            line-height: 1.5;
+        }
+
+        .message.bot .message-content {
+            background: #667eea;
+            color: white;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.user .message-content {
+            background: #e0e0e0;
+            color: #333;
+            border-bottom-right-radius: 5px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input input:focus {
+            border-color: #667eea;
+        }
+
+        .chat-input button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .chat-input button:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-input button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* 统计区域 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-item.income {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .stat-item.expense {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        /* 记录列表 */
+        .records-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .record-item:hover {
+            background: #f9f9f9;
+        }
+
+        .record-info {
+            flex: 1;
+        }
+
+        .record-date {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 3px;
+        }
+
+        .record-detail {
+            font-size: 1em;
+            color: #333;
+        }
+
+        .record-amount {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .record-amount.positive {
+            color: #11998e;
+        }
+
+        .record-amount.negative {
+            color: #eb3349;
+        }
+
+        .record-delete {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .record-delete:hover {
+            background: #ee5a5a;
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 快速示例 */
+        .quick-examples {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .quick-examples h3 {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .example-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            margin: 5px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* 成员统计 */
+        .member-stats {
+            margin-top: 15px;
+        }
+
+        .member-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        .member-stat .member-name {
+            font-weight: bold;
+        }
+
+        .member-stat .member-amount {
+            font-weight: bold;
+        }
+
+        .member-stat .member-amount.positive {
+            color: #11998e;
+        }
+
+        .member-stat .member-amount.negative {
+            color: #eb3349;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 家庭记账本智能体</h1>
+            <p>用自然语言对话，轻松管理家庭收支</p>
+        </div>
+
+        <div class="main-content">
+            <!-- 左侧：聊天区域 -->
+            <div class="card chat-container">
+                <h2>💬 智能对话</h2>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot">
+                        <div class="avatar">🤖</div>
+                        <div class="message-content">
+                            您好，欢迎使用咱们小家专属记账本！请按照"x 年 x 月 x 日，谁做什么事收入/支出多少钱"的格式来输入。请告诉我你的账目需求吧~
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="userInput" placeholder="输入您的记账需求..." onkeypress="if(event.keyCode===13) sendMessage()">
+                    <button onclick="sendMessage()" id="sendBtn">发送</button>
+                </div>
+                <div class="quick-examples">
+                    <h3>💡 快速示例：</h3>
+                    <button class="example-btn" onclick="useExample('今天女儿买了双登山鞋 499 元')">今天女儿买了双登山鞋 499 元</button>
+                    <button class="example-btn" onclick="useExample('7 月 5 日妈妈收到报销 1000 元')">7 月 5 日妈妈收到报销 1000 元</button>
+                    <button class="example-btn" onclick="useExample('这个月女儿花了多少钱？')">这个月女儿花了多少钱？</button>
+                    <button class="example-btn" onclick="useExample('看下这个月家里花钱明细')">查看明细</button>
+                </div>
+            </div>
+
+            <!-- 右侧：统计和记录 -->
+            <div class="card">
+                <h2>📊 财务统计</h2>
+                <div class="stats-grid">
+                    <div class="stat-item income">
+                        <div class="stat-label">总收入</div>
+                        <div class="stat-value" id="totalIncome">¥0</div>
+                    </div>
+                    <div class="stat-item expense">
+                        <div class="stat-label">总支出</div>
+                        <div class="stat-value" id="totalExpense">¥0</div>
+                    </div>
+                </div>
+                <div class="stat-item" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="stat-label">结余</div>
+                    <div class="stat-value" id="netBalance">¥0</div>
+                </div>
+
+                <div class="member-stats" id="memberStats">
+                    <h3 style="margin: 15px 0 10px 0; color: #666;">按成员统计</h3>
+                    <div id="memberStatsContent"></div>
+                </div>
+
+                <h2 style="margin-top: 25px;">📝 最近记录</h2>
+                <div class="records-list" id="recordsList">
+                    <p style="text-align: center; color: #999; padding: 20px;">加载中...</p>
+                </div>
+                <button onclick="loadData()" style="margin-top: 15px; width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1em;">🔄 刷新数据</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+
+        // 发送消息
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            const sendBtn = document.getElementById('sendBtn');
+
+            if (!message) return;
+
+            // 添加用户消息
+            addMessage(message, 'user');
+            input.value = '';
+            sendBtn.disabled = true;
+
+            // 显示加载状态
+            addMessage('<span class="loading"></span>', 'bot', 'loading');
+
+            try {
+                const response = await fetch(`${API_BASE}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+                
+                // 移除加载消息
+                removeLoadingMessage();
+
+                if (data.success) {
+                    addMessage(data.message.replace(/✓/g, '✅').replace(/⚠️/g, '⚠️').replace(/📊/g, '📊'), 'bot');
+                    // 刷新数据
+                    loadData();
+                } else {
+                    addMessage('❌ ' + data.message, 'bot');
+                }
+            } catch (error) {
+                removeLoadingMessage();
+                addMessage('❌ 网络错误：' + error.message, 'bot');
+            }
+
+            sendBtn.disabled = false;
+            input.focus();
+        }
+
+        // 添加消息到聊天
+        function addMessage(content, type, id = null) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            if (id) messageDiv.id = id;
+
+            const avatar = type === 'bot' ? '🤖' : '👤';
+
+            messageDiv.innerHTML = `
+                ${type === 'bot' ? `<div class="avatar">${avatar}</div>` : ''}
+                <div class="message-content">${content}</div>
+                ${type === 'user' ? `<div class="avatar">${avatar}</div>` : ''}
+            `;
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 移除加载消息
+        function removeLoadingMessage() {
+            const loading = document.getElementById('loading');
+            if (loading) loading.remove();
+        }
+
+        // 使用示例
+        function useExample(text) {
+            document.getElementById('userInput').value = text;
+            document.getElementById('userInput').focus();
+        }
+
+        // 加载数据
+        async function loadData() {
+            try {
+                // 加载记录
+                const recordsRes = await fetch(`${API_BASE}/api/records`);
+                const recordsData = await recordsRes.json();
+                renderRecords(recordsData.records || []);
+
+                // 加载统计
+                const statsRes = await fetch(`${API_BASE}/api/stats`);
+                const statsData = await statsRes.json();
+                renderStats(statsData.stats || {});
+            } catch (error) {
+                console.error('加载数据失败:', error);
+            }
+        }
+
+        // 渲染记录列表
+        function renderRecords(records) {
+            const container = document.getElementById('recordsList');
+            
+            if (records.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">暂无记录</p>';
+                return;
+            }
+
+            container.innerHTML = records.slice(0, 20).map(record => {
+                const amountClass = record.amount >= 0 ? 'positive' : 'negative';
+                const sign = record.amount >= 0 ? '+' : '';
+                return `
+                    <div class="record-item">
+                        <div class="record-info">
+                            <div class="record-date">${record.date}</div>
+                            <div class="record-detail">${record.member} - ${record.category} ${record.item || ''}</div>
+                        </div>
+                        <div class="record-amount ${amountClass}">${sign}¥${Math.abs(record.amount).toFixed(2)}</div>
+                        <button class="record-delete" onclick="deleteRecord(${record.id})">删除</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 渲染统计
+        function renderStats(stats) {
+            document.getElementById('totalIncome').textContent = `¥${(stats.total_income || 0).toFixed(2)}`;
+            document.getElementById('totalExpense').textContent = `¥${Math.abs(stats.total_expense || 0).toFixed(2)}`;
+            document.getElementById('netBalance').textContent = `¥${(stats.net || 0).toFixed(2)}`;
+
+            // 成员统计
+            const memberStatsContent = document.getElementById('memberStatsContent');
+            if (stats.by_member && Object.keys(stats.by_member).length > 0) {
+                memberStatsContent.innerHTML = Object.entries(stats.by_member).map(([member, amount]) => {
+                    const amountClass = amount >= 0 ? 'positive' : 'negative';
+                    const sign = amount >= 0 ? '+' : '';
+                    return `
+                        <div class="member-stat">
+                            <span class="member-name">${member}</span>
+                            <span class="member-amount ${amountClass}">${sign}¥${Math.abs(amount).toFixed(2)}</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                memberStatsContent.innerHTML = '<p style="text-align: center; color: #999; padding: 10px;">暂无数据</p>';
+            }
+        }
+
+        // 删除记录
+        async function deleteRecord(id) {
+            if (!confirm('确定要删除这条记录吗？')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/api/delete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: [id] })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    loadData();
+                    addMessage(`✅ 已删除记录 ID: ${id}`, 'bot');
+                } else {
+                    alert('删除失败：' + data.message);
+                }
+            } catch (error) {
+                alert('删除失败：' + error.message);
+            }
+        }
+
+        // 页面加载时初始化数据
+        window.onload = loadData;
+    </script>
+</body>
+</html>
