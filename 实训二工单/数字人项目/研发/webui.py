@@ -335,7 +335,7 @@ def human_response(source_image, history, question_audio, talker_method, voice, 
         gr.Warning("不支持的方法：" + talker_method)
         return None
 
-    return video, driven_vtt if driven_vtt else video
+    return (video, driven_vtt) if driven_vtt else video
 
 
 @calculate_time
@@ -456,9 +456,9 @@ def webui_setting(talk=False):
         talker_method = None
     tts_method = gr.Radio(['Edge-TTS', 'PaddleTTS', 'GPT-SoVITS克隆声音', 'CosyVoice-SFT模式', 'CosyVoice-克隆翻译模式', 'Comming Soon!!!'], label="Text To Speech Method", value='Edge-TTS')
     tts_method.change(fn=tts_model_change, inputs=[tts_method], outputs=[tts_method])
-    asr_method = gr.Radio(choices=['Whisper-tiny', 'Whisper-base', 'FunASR', 'OmniSenseVoice-quantize', 'OmniSenseVoice', 'Comming Soon!!!'], value='Whisper-base', label='语音识别模型选择')
+    asr_method = gr.Radio(choices=['Whisper-tiny', 'Whisper-base', 'FunASR', 'Comming Soon!!!'], value='Whisper-base', label='语音识别模型选择')
     asr_method.change(fn=asr_model_change, inputs=[asr_method], outputs=[asr_method])
-    llm_method = gr.Dropdown(choices=['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', 'QAnything', '直接回复 Direct Reply', 'Comming Soon!!!'], value='直接回复 Direct Reply', label='LLM 模型选择')
+    llm_method = gr.Dropdown(choices=['Qwen', 'Qwen2', 'Linly', 'Gemini', 'ChatGLM', 'ChatGPT', 'GPT4Free', 'QAnything', 'LocalRAG', '直接回复 Direct Reply', 'Comming Soon!!!'], value='直接回复 Direct Reply', label='LLM 模型选择')
     llm_method.change(fn=llm_model_change, inputs=[llm_method], outputs=[llm_method])
     return (source_image, voice, rate, volume, pitch, am, voc, lang, male, 
             ref_audio, prompt_text, prompt_language, text_language, cut_method, use_mic_voice, tts_method, 
@@ -776,14 +776,6 @@ def asr_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
             from ASR import FunASR
             asr = FunASR()
             gr.Info("FunASR模型导入成功")
-        elif model_name == 'OmniSenseVoice-quantize':
-            from ASR import OmniSenseVoice
-            asr = OmniSenseVoice(quantize=True)
-            gr.Info("OmniSenseVoice-quantize模型导入成功")
-        elif model_name == 'OmniSenseVoice':
-            from ASR import OmniSenseVoice
-            asr = OmniSenseVoice(quantize=False)
-            gr.Info("OmniSenseVoice模型导入成功")
         else:
             gr.Warning("未知ASR模型，可提issue和PR 或者 建议更新模型")
     except Exception as e:
@@ -835,6 +827,9 @@ def llm_model_change(model_name, progress=gr.Progress(track_tqdm=True)):
         elif model_name == 'QAnything':
             llm = llm_class.init_model('QAnything')
             gr.Info("QAnything模型接口加载成功")
+        elif model_name == 'LocalRAG':
+            llm = llm_class.init_model('LocalRAG')
+            gr.Info("LocalRAG接口加载成功")
         else:
             gr.Warning("未知LLM模型，请检查模型名称或提出Issue")
     except Exception as e:
