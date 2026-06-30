@@ -1,0 +1,15 @@
+# 工单编号: 人工智能NLP-Agent数字人项目-文生图智能体任务
+# 依赖清单 (通义 DashScope 后端方案)
+#
+# 已验证环境: conda env "nlp_1" (python 3.9)
+#   图像生成无需本地 GPU/大模型, 走通义云端 qwen-image-edit。
+#
+# 运行前需设置环境变量:  DASHSCOPE_API_KEY=<你的通义API Key>
+
+dashscope>=1.20            # 通义 SDK (LLM function-calling + 图像编辑)
+opencv-python>=4.8         # 人脸检测/对齐
+pillow>=10                 # 图像处理/拼图
+numpy>=1.24
+
+# 可选: Web UI
+# gradio>=4.0

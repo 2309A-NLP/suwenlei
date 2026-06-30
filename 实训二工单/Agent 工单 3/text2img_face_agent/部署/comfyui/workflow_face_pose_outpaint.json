@@ -1,0 +1,116 @@
+{
+  "_comment_workorder": "人工智能NLP-Agent数字人项目-文生图智能体任务",
+  "_comment_usage": "ComfyUI API-format 工作流。启用 设置->Enable Dev mode options, 然后 Load(API format) 导入。需安装自定义节点 ComfyUI_IPAdapter_plus。把 LoadImage 指向原始面部图; 修改 6 号正向提示词中的 left/right/forward 生成不同视图; 下半部分为扩图(outpaint)。",
+  "_comment_models": "checkpoint: v1-5-pruned-emaonly.safetensors; ip-adapter: ip-adapter-plus-face_sd15.safetensors; clip_vision: CLIP-ViT-H-14; inpaint 用同一 KSampler+VAEEncodeForInpaint(ImagePadForOutpaint) 完成。",
+
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": { "ckpt_name": "v1-5-pruned-emaonly.safetensors" }
+  },
+  "10": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "original_face.png" }
+  },
+
+  "5": {
+    "class_type": "IPAdapterUnifiedLoader",
+    "inputs": { "preset": "PLUS FACE (portraits)", "model": ["4", 0] }
+  },
+  "6": {
+    "class_type": "IPAdapter",
+    "inputs": {
+      "weight": 0.7,
+      "weight_type": "standard",
+      "start_at": 0.0,
+      "end_at": 1.0,
+      "model": ["5", 0],
+      "ipadapter": ["5", 1],
+      "image": ["10", 0]
+    }
+  },
+
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "a studio passport portrait of the same man, head turned to the left, three-quarter left profile, looking to the left, plain light grey background, high detail skin, sharp focus, photorealistic, 50mm portrait, soft studio light",
+      "clip": ["4", 1]
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "deformed, distorted, disfigured, blurry, low quality, lowres, pixelated, extra faces, cropped face, bad anatomy, bad eyes, asymmetric eyes, watermark, text, jpeg artifacts, cartoon, 3d render",
+      "clip": ["4", 1]
+    }
+  },
+
+  "11": {
+    "class_type": "ImageScale",
+    "inputs": { "image": ["10", 0], "upscale_method": "lanczos", "width": 512, "height": 512, "crop": "center" }
+  },
+  "12": {
+    "class_type": "VAEEncode",
+    "inputs": { "pixels": ["11", 0], "vae": ["4", 2] }
+  },
+
+  "13": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": 42, "steps": 30, "cfg": 7.0,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras",
+      "denoise": 0.62,
+      "model": ["6", 0],
+      "positive": ["7", 0],
+      "negative": ["8", 0],
+      "latent_image": ["12", 0]
+    }
+  },
+  "14": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["13", 0], "vae": ["4", 2] }
+  },
+  "15": {
+    "class_type": "SaveImage",
+    "inputs": { "filename_prefix": "view_pose", "images": ["14", 0] }
+  },
+
+  "_comment_outpaint": "==== 扩图(outpaint): 把上面生成的视图四周各扩 128px 后 inpaint ====",
+  "20": {
+    "class_type": "ImagePadForOutpaint",
+    "inputs": {
+      "image": ["14", 0],
+      "left": 128, "top": 128, "right": 128, "bottom": 128, "feathering": 40
+    }
+  },
+  "21": {
+    "class_type": "VAEEncodeForInpaint",
+    "inputs": { "pixels": ["20", 0], "vae": ["4", 2], "mask": ["20", 1], "grow_mask_by": 16 }
+  },
+  "22": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "passport studio portrait, seamless plain light grey background, natural continuation of the shoulders and clothing, even soft studio lighting, photorealistic, consistent color and texture",
+      "clip": ["4", 1]
+    }
+  },
+  "23": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": 142, "steps": 30, "cfg": 7.0,
+      "sampler_name": "dpmpp_2m", "scheduler": "karras",
+      "denoise": 0.95,
+      "model": ["4", 0],
+      "positive": ["22", 0],
+      "negative": ["8", 0],
+      "latent_image": ["21", 0]
+    }
+  },
+  "24": {
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["23", 0], "vae": ["4", 2] }
+  },
+  "25": {
+    "class_type": "SaveImage",
+    "inputs": { "filename_prefix": "view_outpaint", "images": ["24", 0] }
+  }
+}
