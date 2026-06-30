@@ -1,0 +1,7 @@
+# 日程提醒智能体 - Python 依赖
+# 工单编号：人工智能NLP-Agent数字人项目-日程提醒智能体任务
+#
+# 本项目仅使用 Python 标准库（sqlite3 / threading / datetime / re），
+# 无需安装任何第三方依赖，开箱即用。
+#
+# 运行环境：Python 3.8+
